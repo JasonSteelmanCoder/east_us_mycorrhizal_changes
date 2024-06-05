@@ -1,0 +1,1 @@
+SELECT ratio_of_am_to_em_t1, ratio_of_am_to_em_t2, round(ratio_of_am_to_em_t2::decimal / ratio_of_am_to_em_t1::decimal, 2) change_of_am_em_ratio FROM ratios;
