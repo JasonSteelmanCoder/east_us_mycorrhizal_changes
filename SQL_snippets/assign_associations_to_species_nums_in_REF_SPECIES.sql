@@ -50,7 +50,7 @@ WHERE ref_species.association IS NULL
 AND ref_species.genus IN (SELECT genus FROM mycorrhiza_mkt WHERE association = 'AM');
 
 UPDATE ref_species
-SET association = 'EM'
+SET association = 'ECM'
 WHERE ref_species.association IS NULL
 AND ref_species.genus IN (SELECT genus FROM mycorrhiza_mkt WHERE association = 'ECM');
 
@@ -60,7 +60,7 @@ WHERE ref_species.association IS NULL
 AND ref_species.genus IN (SELECT genus FROM mycorrhiza_mkt WHERE association = 'Ericoid');
  
 UPDATE ref_species
-SET association = 'AM-EM'
+SET association = 'AM-ECM'
 WHERE ref_species.association IS NULL 
 AND ref_species.genus IN (SELECT genus FROM mycorrhiza_mkt WHERE association = 'AM-ECM');
 
