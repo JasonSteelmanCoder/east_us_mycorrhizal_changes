@@ -22,7 +22,7 @@ WHERE ref_species.genus IN (
 );
 
 UPDATE ref_species
-SET association = 'EM-AM'
+SET association = 'AM-EM'
 WHERE ref_species.genus IN (
   SELECT mycorrhiza_brundrett_tedersoo.genus FROM mycorrhiza_brundrett_tedersoo WHERE mycorrhiza_brundrett_tedersoo.mycorrhiza = 'EM-AM'
 );
@@ -50,7 +50,7 @@ WHERE ref_species.association IS NULL
 AND ref_species.genus IN (SELECT genus FROM mycorrhiza_mkt WHERE association = 'AM');
 
 UPDATE ref_species
-SET association = 'ECM'
+SET association = 'EM'
 WHERE ref_species.association IS NULL
 AND ref_species.genus IN (SELECT genus FROM mycorrhiza_mkt WHERE association = 'ECM');
 
@@ -60,7 +60,7 @@ WHERE ref_species.association IS NULL
 AND ref_species.genus IN (SELECT genus FROM mycorrhiza_mkt WHERE association = 'Ericoid');
  
 UPDATE ref_species
-SET association = 'AM-ECM'
+SET association = 'AM-EM'
 WHERE ref_species.association IS NULL 
 AND ref_species.genus IN (SELECT genus FROM mycorrhiza_mkt WHERE association = 'AM-ECM');
 
