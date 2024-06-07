@@ -22,20 +22,46 @@ mycorrhiza_brundrett_tedersoo.csv and mycorrhiza_akhmetzhanova.csv. Other trees 
 classified in the file called mycorrhiza_mkt.csv. The original sources for those 
 classifications are included in the `source` column of that table.
 
-Steps:
+Steps to build map:
 
-    download plot, tree, and cond csv files
-    for each plot file, tree file, and cond file: (using converter_looper.py, copier_looper.py, and alterer_looper.py)
-    use python to write a sql query that creates a table with the csv files' columns (csv_to_sql_converter.py)
-    copy the sql query over to populate a table with column names
-    use sql 'COPY FROM' to copy the data into the tables from the csv
-    combine the by-state plot, tree, and cond tables into one East-US table for plot and one for tree
-    copy mycorrhizal associations into database from Brundrett and Tedersoo paper and from 'rediscovered treasures' paper
+    1. Go to FIA Datamart. For each of the states east of the Mississippi River, download the zip file 
+    for plot, tree, and cond. Unzipping those files will leave you with a csv file for each. Put all of 
+    the plot files in one folder, the tree files in another, and the cond files in a third.
+    
+    2. csv_to_sql_converter.py contains a function that takes in a csv file and outputs a SQL query that 
+    will create a postgres table to hold the contents of the csv. converter_looper.py will run that 
+    function once for every csv file in a folder. You should run converter_looper.py once for the plot 
+    files folder, once for tree files, and once for cond files.     
+    
+    3. When converter_looper.py finishes running, copy its output into a Postgres query. Running the 
+    query will create columns for the contents of the CSV files to later be filled into. 
+
+    
+    4. Run copier_looper.py on your plot folder, your tree folder, and your cond folder. It will create 
+    SQL queries to copy the contents of the CSV files into their corresponding tables in the database.  
+
+    Note: The query created by converter_looper.py may choose incorrect data types for some columns. To 
+    fix a column with the incorrect datatype, run alterer_looper.py to write queries for all states. 
+    Then run those queries on the database to adjust datatypes for all states at once. When all 
+    datatypes are correctly assigned, the copy queries will run without throwing an error.
+    
+    5. Combine the by-state plot, tree, and cond tables in the database  into one East-US table for plot 
+    and one for tree
+    
+    6. Copy mycorrhizal associations into the database from Brundrett and Tedersoo paper and from 
+    'rediscovered treasures' paper
+    
     download REF_SPECIES from datamart and insert it into database with python and sql (csv_to_sql_converter.py again)
+    
     add `association` column to REF_SPECIES using SQL (data from tedersoo and from "a rediscovered treasure" at https://esapubs.org/archive/ecol/E093/059/ and on desktop as myco_db) (assign_associations_to_species_nums_in_REF_SPECIES.sql)
+    
     find the basal area of am and basal area of em trees for each county and compare them
+    
     use loop_ratio_finder.py to populate a csv with basal areas and change
+    
     download shapefiles and remove unnecessary counties
+    
     add data from percents_and_ratios csv to shapefile fields (shapefile_field_filler.py)
+    
     color counties by their attirbutes (shapefile > symbology > categorized. Don't forget to click 'classify'!)
 
