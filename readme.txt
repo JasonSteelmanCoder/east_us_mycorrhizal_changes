@@ -48,14 +48,17 @@ Steps to build map:
     5. Combine the by-state plot, tree, and cond tables in the database  into one East-US table for plot 
     and one for tree
     
-    6. Copy mycorrhizal associations into the database from Brundrett and Tedersoo paper and from 
-    'rediscovered treasures' paper
+    6. Use csv_to_sql_converter.py to create a SQL query to create mycorrhiza_akhmetzhanova, 
+    mycorrhiza_brundrett_tedersoo, and mycorrhiza_mkt tables in your database. Copy their values into the 
+    new tables from the CSV files of the same name.  
     
-    download REF_SPECIES from datamart and insert it into database with python and sql (csv_to_sql_converter.py again)
+    7. Download REF_SPECIES from datamart and insert it into the database. Again, you can use 
+    csv_to_sql_converter.py to write your SQL query.
     
-    add `association` column to REF_SPECIES using SQL (data from tedersoo and from "a rediscovered treasure" at https://esapubs.org/archive/ecol/E093/059/ and on desktop as myco_db) (assign_associations_to_species_nums_in_REF_SPECIES.sql)
+    8 Use assign_associations_to_species_nums_in_REF_SPECIES.sql to add an associations column to the 
+    REF_SPECIES table.
     
-    find the basal area of am and basal area of em trees for each county and compare them
+    9. Find the basal area of AM and basal area of EM trees for each county and compare them
     
     use loop_ratio_finder.py to populate a csv with basal areas and change
     
@@ -64,4 +67,5 @@ Steps to build map:
     add data from percents_and_ratios csv to shapefile fields (shapefile_field_filler.py)
     
     color counties by their attirbutes (shapefile > symbology > categorized. Don't forget to click 'classify'!)
+
 
