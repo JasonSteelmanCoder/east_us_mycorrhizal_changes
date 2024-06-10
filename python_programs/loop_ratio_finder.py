@@ -66,9 +66,9 @@ for county_row in counties:
             )
             SELECT  
             sum(basal_area_for_county) AS total_basal_area_t1,
-            (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') AS am_basal_area_t1,
-            (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') AS em_basal_area_t1,
-            COALESCE(round((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') / ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') + (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM'))::decimal, 2), CASE WHEN ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') IS NULL AND (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') IS NOT NULL) THEN 0 WHEN ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') IS NULL AND (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') IS NULL) THEN NULL ELSE 1 END) AS am_dominance_t1,
+            (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') + ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM-EM')::DECIMAL / 2) AS am_basal_area_t1,
+            (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') + ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM-EM')::DECIMAL / 2) AS em_basal_area_t1,
+            COALESCE(round((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') + ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM-EM')::DECIMAL / 2) / ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') + (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') + (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM-EM'))::decimal, 2), CASE WHEN ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') IS NULL AND (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') IS NOT NULL) THEN 0 WHEN ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') IS NULL AND (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') IS NULL) THEN NULL ELSE 1 END) AS am_dominance_t1,
             ROW_NUMBER() OVER() AS rownum
             FROM association_basal_areas
         ), 
@@ -104,9 +104,9 @@ for county_row in counties:
             )
             SELECT  
             sum(basal_area_for_county) AS total_trees_t2,
-            (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') AS am_basal_area_t2,
-            (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') AS em_basal_area_t2,
-            COALESCE(round((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') / ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') + (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM'))::decimal, 2), CASE WHEN ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') IS NULL AND (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') IS NOT NULL) THEN 0 WHEN ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') IS NULL AND (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') IS NULL) THEN NULL ELSE 1 END) AS am_dominance_t2,
+            (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') + ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM-EM')::DECIMAL / 2) AS am_basal_area_t2,
+            (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') + ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM-EM')::DECIMAL / 2) AS em_basal_area_t2,
+            COALESCE(round((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') + ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM-EM')::DECIMAL / 2) / ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') + (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') + (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM-EM'))::decimal, 2), CASE WHEN ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') IS NULL AND (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') IS NOT NULL) THEN 0 WHEN ((SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'EM') IS NULL AND (SELECT basal_area_for_county FROM association_basal_areas WHERE association = 'AM') IS NULL) THEN NULL ELSE 1 END) AS am_dominance_t2,
             ROW_NUMBER() OVER() AS rownum
             FROM association_basal_areas
         )
@@ -134,7 +134,10 @@ for county_row in counties:
         output_contents += f'{statecd},{unitcd},{countycd},'
         # print(county_row)
         for i in range(row_length - 1):
-            output_contents += f'{county_row[i]},'
+            if county_row[i] == 'None':
+                output_contents += ','
+            else:
+                output_contents += f'{county_row[i]},'
         output_contents += f'{county_row[-1]}\n'
 
 with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_percents_and_ratios_by_plot.csv", "w") as output_file:
