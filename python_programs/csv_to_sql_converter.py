@@ -64,4 +64,4 @@ def write_sql_query_to_make_csv_columns(table_name, path):
 
 if __name__ == "__main__":
     # replace the arguments below to use the function without exporting it.
-    write_sql_query_to_make_csv_columns('east_us_precip', f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_precip_by_county.csv')
+    write_sql_query_to_make_csv_columns('east_us_temperature', f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_mean_annual_temperature_by_county.csv')
