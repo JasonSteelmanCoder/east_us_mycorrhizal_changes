@@ -58,14 +58,12 @@ Steps to build map:
     8 Use assign_associations_to_species_nums_in_REF_SPECIES.sql to add an associations column to the 
     REF_SPECIES table.
     
-    9. Find the basal area of AM and basal area of EM trees for each county and compare them
+    9. Use loop_ratio_finder.py to find the basal area of AM and basal area of EM trees for each county and compare them
     
-    use loop_ratio_finder.py to populate a csv with basal areas and change
+    10. Download a counties shapefile from the Census Bureau website and remove counties east of the Mississippi River
     
-    download shapefiles and remove unnecessary counties
+    11. Use shapefile_field_filler.py to add data from percents_and_ratios csv to shapefile fields.
     
-    add data from percents_and_ratios csv to shapefile fields (shapefile_field_filler.py)
-    
-    color counties by their attirbutes (shapefile > symbology > categorized. Don't forget to click 'classify'!)
+    12. Color counties by their attirbutes (shapefile > symbology > categorized. Don't forget to click 'classify'!)
 
 

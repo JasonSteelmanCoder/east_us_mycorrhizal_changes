@@ -10,9 +10,11 @@ with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_percents_and_ra
     with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/cleaned_east_us_percents_and_ratios.csv', 'w') as output:
 
         for row in reader:
+            write_line = ''
             for word in row:
                 if word == 'None':
-                    output.write(',')
+                    write_line += ','
                 else:
-                    output.write(f'{word},')
+                    write_line += f'{word},'
+            output.write(write_line[:-1])       # clip the trailing comma
             output.write('\n')
