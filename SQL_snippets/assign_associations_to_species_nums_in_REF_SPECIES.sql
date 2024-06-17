@@ -1,3 +1,7 @@
+-- This set of queries adds an "association" column to the end of the ref_species table. 
+-- Then, it populates the column with the mycorrhizal association of each species, based on 
+-- the mycorrhiza_brundrett_tedersoo, mycorrhiza_akhmetzhanova, and mycorrhiza_mkt tables.
+
 -- Create a ref_species column
 ALTER TABLE ref_species
 ADD association text;

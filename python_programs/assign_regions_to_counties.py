@@ -21,7 +21,6 @@ arcpy.analysis.SpatialJoin(
 )
 
 field_names = [f.name for f in arcpy.ListFields(r"memory/spatial_join")]
-# print(field_names)
 
 intersection_dict = {}
 with arcpy.da.SearchCursor(r"memory/spatial_join", ["TARGET_FID", "MAP_UNIT_N", "Shape_Area"]) as cursor:
