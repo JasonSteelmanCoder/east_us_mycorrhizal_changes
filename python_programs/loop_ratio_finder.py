@@ -1,10 +1,29 @@
+"""
+
+This program connects to the PostgreSQL database, pulls down data from the east_us_tree, 
+east_us_cond, east_us_plot, and ref_species tables, then processes the data to find AM dominance at T1 
+and T2, as well as the difference between them. It outputs its findings to a csv file.
+
+For this program to work, you need to have the tree, plot, and cond tables for each state, and 
+the ref_species table downloaded from the FIA database. Those then need to be put into a 
+local postgres database. The state-by-state cond and tree tables will need to be merged 
+into east_us_tree, east_us_plot, and east_us_cond tables respectively.
+
+This program accesses details for connecting to the database through a .env file. 
+
+
+"""
+
+# import libraries for connecting to database and getting details from .env file
 import psycopg2
 from dotenv import load_dotenv
 import os
 load_dotenv()
 
+# start building the output by inserting the column titles of the output csv
 output_contents = "statecd,unitcd,countycd,tot_bas_t1,ambasar_t1,embasar_t1,am_dom_t1,tot_bas_t2,ambasar_t2,embasar_t2,am_dom_t2,dif_am_dom\n"
 
+# connect to the database using details from the .env file
 connection = psycopg2.connect(
     dbname = os.getenv("DBNAME"),
     user = os.getenv("USER"),
@@ -15,6 +34,7 @@ connection = psycopg2.connect(
 
 cursor = connection.cursor()
 
+# query east_us_plot to get every county in the eastern US
 cursor.execute(f"""
     SELECT statecd, unitcd, countycd 
     FROM east_us_plot 
@@ -31,9 +51,15 @@ for county_row in counties:
     unitcd = county_row[1]
     countycd = county_row[2]
 
+    # print for monitoring reasons
     count += 1
     print(f'Processing {statecd}  {unitcd}  {countycd}. Count: {count}')
 
+    # check every tree in a county for AM/EM association, and sum all AM basal area and EM basal area
+    # find AM dominance by county by dividing the AM area by the total AM and EM area
+    # trees that are both AM and EM have half of their basal area counted as AM and the other half as AM
+    # do this process once for T1 and again for T2
+    # finally, select all of the values that should go into the output csv
     cursor.execute(f"""
         WITH t1 
         AS (
@@ -130,9 +156,9 @@ for county_row in counties:
 
     row_length = len(rows[0])
 
+    # write the query results to output_contents
     for county_row in rows:            # (there is only one row per SQL query)
         output_contents += f'{statecd},{unitcd},{countycd},'
-        # print(county_row)
         for i in range(row_length - 1):
             if county_row[i] == 'None':
                 output_contents += ','
@@ -140,8 +166,12 @@ for county_row in counties:
                 output_contents += f'{county_row[i]},'
         output_contents += f'{county_row[-1]}\n'
 
+# once all county rows have been added to output_contents, write contents to a csv file
+# note that this implementation gets part of the path from a .env file
+# replace the path with the location where you want your csv file stored on your computer
 with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_percents_and_ratios_by_plot.csv", "w") as output_file:
     output_file.write(output_contents)
 
+# clean up
 cursor.close()
 connection.close()
