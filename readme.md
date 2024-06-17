@@ -1,4 +1,4 @@
-Introduction:
+# Introduction:
 
 This repository contains programs to build maps of the change in arbuscular mycorrhizal 
 versus ectomycorrhizal dominance in the forests of the eastern United States from a T1 of 1980-1998 
@@ -6,14 +6,14 @@ through a T2 of 2015-2022. It also includes the necessary software to build comp
 potentially correlated phenomena. These include fire frequency, nitrogen deposition, mean annual 
 temperature, mean annual precipitation, and ecoregion.
 
-Change in AM / EM Dominance Map:
+## Change in AM / EM Dominance Map:
 
 This map uses the FIA database to track changes in the dominance of arbuscular 
 mycorrhizal (AM) versus ectomycorrhizal (EM) trees in the eastern United States from T1 to T2 of 2015 - 
 2022. Recorded changes are used to build a county-by-county map of the 26 states east of the Mississippi 
 River, in which color indicates the difference over time in the dominance of AM and EM species. 
 
-Data Used for AM / EM Dominance:
+## Data Used for AM / EM Dominance:
 
 The majority of the data used in the AM / EM map comes from the FIA database, and can be downloaded 
 for free at https://apps.fs.usda.gov/fia/datamart/datamart.html. 
@@ -29,7 +29,7 @@ mycorrhiza_brundrett_tedersoo.csv and mycorrhiza_akhmetzhanova.csv. Other trees 
 classified in the file called mycorrhiza_mkt.csv. The original sources for those 
 classifications are included in the `source` column of that table.
 
-Steps to Build the AM / EM Map:
+## Steps to Build the AM / EM Map:
 
     1. Go to FIA Datamart. For each of the states east of the Mississippi River, download the zip file 
     for plot, tree, and cond. Unzipping those files will leave you with a csv file for each. Put all of 
@@ -76,16 +76,16 @@ Steps to Build the AM / EM Map:
     12. Color counties by their attirbutes (shapefile > symbology > categorized. Don't forget to click 
     'classify'!)
 
-Fire Frequency Map:
+## Fire Frequency Map:
 
 This map tracks how many times in the study period (1980 - 2022) a forest plot within the county was 
 observed to have fire damage. 
 
-Data Used for the Fire Frequency Map:
+## Data Used for the Fire Frequency Map:
 
 This data comes from the plot table of the FIA database.
 
-Steps to Build the Fire Frequency Map:
+## Steps to Build the Fire Frequency Map:
 
     1. If you haven't already, follow steps 1-5 from the AM/EM Pipeline directions (The tree table is 
     not necessary if you only want fire data.)
@@ -106,16 +106,16 @@ Steps to Build the Fire Frequency Map:
     
     8. Color counties by the attribute firedplots
 
-Temperature and Precipitation Maps:
+## Temperature and Precipitation Maps:
 
 The temperature and precipitation maps track the mean annual temperature and precipitation for a given 
 county.
 
-Data Used for the Temperature and Precipitation Maps:
+## Data Used for the Temperature and Precipitation Maps:
 
 Data for these maps is from 30 Year Normals datasets provided by the PRISM Climate Group. 
 
-Steps to Build the Temperature and Precipitation Maps:
+## Steps to Build the Temperature and Precipitation Maps:
 
     1. Go to https://prism.oregonstate.edu/normals/
     
@@ -153,17 +153,15 @@ Steps to Build the Temperature and Precipitation Maps:
     
     12. In the attribute table, click the hamburger menu and export the table to a csv file
 
-Nitrogen Deposition Map:
+## Nitrogen Deposition Map:
 
-The nitrogen deposition map shows an estimate of the annual kilograms per hectare per year of nitrogen 
-deposition for each county.
+The nitrogen deposition map shows an estimate of the annual kilograms per hectare per year of nitrogen deposition for each county.
 
-Data Used for the Nitrogen Deposition Map:
+## Data Used for the Nitrogen Deposition Map:
 
-The data for this map comes from the National Atmospheric Deposition Program's National Trends Network 
-datasets.
+The data for this map comes from the National Atmospheric Deposition Program's National Trends Network datasets.
 
-Steps to Build the Nitrogen Deposition Map:
+## Steps to Build the Nitrogen Deposition Map:
 
     1. At https://nadp.slh.wisc.edu/networks/national-trends-network/ download ntn.csv and 
     NTN-ALL-a-s-dep.csv
@@ -192,15 +190,15 @@ Steps to Build the Nitrogen Deposition Map:
     12. Color your counties based on the resulting values in the shapefile's attirbute table (kg/ha/yr 
     from 1980 to 2022)
 
-Ecoregions Map:
+## Ecoregions Map:
 
 The ecoregions map assigns an ecoregion to each county in the eastern United States.
 
-Data Used for the Ecoregions Map:
+## Data Used for the Ecoregions Map:
 
 This map uses a raster provided by the US Forestry Service, delineating the ecoregions of the US.
 
-Steps to Build the Ecoregions Map:
+## Steps to Build the Ecoregions Map:
 
     1. At https://data.fs.usda.gov/geodata/edw/datasets.php?dsetCategory=geoscientificinformation 
     download Ecological Provinces shapefile
