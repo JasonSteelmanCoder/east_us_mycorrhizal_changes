@@ -27,7 +27,7 @@ Brundrett and Tedersoo and of Akhmetzhanova, Soudzilovskaia, et al. (https://esa
 Relevant data from these two sources have been included for your convenience as 
 mycorrhiza_brundrett_tedersoo.csv and mycorrhiza_akhmetzhanova.csv. Other trees are 
 classified in the file called mycorrhiza_mkt.csv. The original sources for those 
-classifications are included in the `source` column of that table.
+classifications are included in the 'source' column of that table.
 
 ## Steps to Build the AM / EM Map:
 
@@ -41,11 +41,11 @@ classifications are included in the `source` column of that table.
     files folder, once for tree files, and once for cond files.     
     
     3. When converter_looper.py finishes running, copy its output into a Postgres query. Running the 
-    query will create columns for the contents of the CSV files to later be filled into. 
+    query will create columns for the contents of the csv files to later be filled into. 
 
     
     4. Run copier_looper.py on your plot folder, your tree folder, and your cond folder. It will create 
-    SQL queries to copy the contents of the CSV files into their corresponding tables in the database.  
+    SQL queries to copy the contents of the csv files into their corresponding tables in the database.  
 
     Note: The query created by converter_looper.py may choose incorrect data types for some columns. To 
     fix a column with the incorrect datatype, run alterer_looper.py to write queries for all states. 
@@ -57,7 +57,7 @@ classifications are included in the `source` column of that table.
     
     6. Use csv_to_sql_converter.py to create a SQL query to create mycorrhiza_akhmetzhanova, 
     mycorrhiza_brundrett_tedersoo, and mycorrhiza_mkt tables in your database. Copy their values into the 
-    new tables from the CSV files of the same name.  
+    new tables from the csv files of the same name.  
     
     7. Download REF_SPECIES from datamart and insert it into the database. Again, you can use 
     csv_to_sql_converter.py to write your SQL query.
@@ -95,9 +95,9 @@ This data comes from the plot table of the FIA database.
     
     3. Convert the csv to an excel workbook for importing to arcgis pro
     
-    4. Add shapefile to arcgis pro project as a new layer
+    4. Add a layer with the East US Counties shapefile. (see the AM/EM pipeline directions for more details)
     
-    5. Add the fire data excel workbook to the arcgis pro project
+    5. Add the excel workbook with the fire data to the arcgis pro project
     
     6. Add a column to the shapefile and a column to the fire data table that combines their state and 
     county codes into one value
@@ -119,16 +119,16 @@ Data for these maps is from 30 Year Normals datasets provided by the PRISM Clima
 
     1. Go to https://prism.oregonstate.edu/normals/
     
-    2. Choose precipitation or temperature and select Download Data (.asc)
+    2. Choose precipitation or temperature and select 'Download Data (.asc)'
     
     3. Unzip the folder
     
-    4. On a new map in ArcGIS Pro, click add data. Select the Raster Dataset from the folder you just 
+    4. On a new map in ArcGIS Pro, click 'add data'. Select the Raster Dataset from the folder you just 
     unzipped
     
     5. Export the raster and remove the original file from the GIS project
     
-    6. Add a layer with the East US shapefile. (see the AM/EM pipeline directions for more details)
+    6. Add a layer with the East US Counties shapefile. (see the AM/EM pipeline directions for more details)
     
     7. Don't forget to export the features and remove the original file from the project
     
@@ -170,8 +170,7 @@ The data for this map comes from the National Atmospheric Deposition Program's N
 
     3. Change values of -9 to NULL
 
-    4. Use annual_n_deposition_by_site.sql on the tables to find kg/ha/yr of N deposited at each 
-    latitude and longitude
+    4. Use annual_n_deposition_by_site.sql on the tables to find kg/ha/yr of N deposited, as well as latitude and longitude, at each site
 
     5. Save the results to a csv file
 
