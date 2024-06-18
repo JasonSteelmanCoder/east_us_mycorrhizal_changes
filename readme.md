@@ -138,7 +138,7 @@ Data for these maps is from 30 Year Normals datasets provided by the PRISM Clima
     
         - The target is the shapefile. 
     
-        - Join features is the points made from the raster.  
+        - Join features should be the points made from the raster.  
     
         - In 'Fields', click edit, then select grid_code, then set the 'source fields' to 'Mean'
     
