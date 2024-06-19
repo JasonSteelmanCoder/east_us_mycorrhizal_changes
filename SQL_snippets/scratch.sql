@@ -26,3 +26,19 @@ COALESCE(
         ELSE 1 
     END
 ) AS am_dominance_t1,
+
+
+
+
+
+SELECT statecd, COUNT(countycd) AS counties 
+FROM fire_frequency 
+WHERE burnedplots = 0
+GROUP BY statecd
+ORDER BY counties DESC; 
+
+SELECT COUNT(countycd) 
+FROM fire_frequency
+WHERE statecd = 55;
+
+
