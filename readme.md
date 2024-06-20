@@ -1,15 +1,15 @@
 # Introduction:
 
 This repository contains programs to build maps of the change in arbuscular mycorrhizal 
-versus ectomycorrhizal dominance in the forests of the eastern United States from a T1 of 1980-1998 
+versus ectomycorrhizal tree dominance in forests of the eastern United States from a T1 of 1980-1998 
 through a T2 of 2015-2022. It also includes the necessary software to build comparable maps with several 
-potentially correlated phenomena. These include fire frequency, nitrogen deposition, mean annual 
+potentially correlated phenomena. These include fire frequency, atmospheric nitrogen deposition, mean annual 
 temperature, mean annual precipitation, and ecoregion.
 
 ## Change in AM / EM Dominance Map:
 
-This map uses the FIA database to track changes in the dominance of arbuscular 
-mycorrhizal (AM) versus ectomycorrhizal (EM) trees in the eastern United States from T1 to T2 of 2015 - 
+This map uses the Forest Inventory and Analysis (FIA) database to track changes in the dominance of arbuscular 
+mycorrhizal (AM) versus ectomycorrhizal (EM) trees in the eastern United States from T1 (1980-1998) to T2 of 2015 - 
 2022. Recorded changes are used to build a county-by-county map of the 26 states east of the Mississippi 
 River, in which color indicates the difference over time in the dominance of AM and EM species. 
 
@@ -23,7 +23,8 @@ REF_SPECIES table. Detailed descriptions of these tables can be found at
 https://www.fs.usda.gov/research/sites/default/files/2023-11/wo-fiadb_user_guide_p2_9-1_final.pdf.
 
 Data on the mycorrhizal affiliation of various tree genera come largely from the works of 
-Brundrett and Tedersoo and of Akhmetzhanova, Soudzilovskaia, et al. (https://esapubs.org/archive/ecol/E093/059/)
+Brundrett and Tedersoo (https://doi.org/10.1007/s11104-020-04627-9) (https://doi.org/10.1111/nph.15440) 
+and of Akhmetzhanova, Soudzilovskaia, et al. (https://esapubs.org/archive/ecol/E093/059/).
 Relevant data from these two sources have been included for your convenience as 
 mycorrhiza_brundrett_tedersoo.csv and mycorrhiza_akhmetzhanova.csv. Other trees are 
 classified in the file called mycorrhiza_mkt.csv. The original sources for those 
@@ -66,7 +67,7 @@ classifications are included in the 'source' column of that table.
     REF_SPECIES table.
     
     9. Use loop_ratio_finder.py to find the basal area of AM and basal area of EM trees for each county 
-    and compare them
+    and compare them.
     
     10. Download a counties shapefile from the Census Bureau website and remove counties east of the 
     Mississippi River
@@ -186,7 +187,7 @@ The data for this map comes from the National Atmospheric Deposition Program's N
 
     11. Do a spatial join between the shapefile and the points
 
-    12. Color your counties based on the resulting values in the shapefile's attirbute table (kg/ha/yr 
+    12. Color your counties based on the resulting values in the shapefile's attribute table (kg/ha/yr 
     from 1980 to 2022)
 
 ## Ecoregions Map:
@@ -195,7 +196,7 @@ The ecoregions map assigns an ecoregion to each county in the eastern United Sta
 
 ## Data Used for the Ecoregions Map:
 
-This map uses a raster provided by the US Forestry Service, delineating the ecoregions of the US.
+This map uses a raster provided by the US Forest Service, delineating the ecoregions of the US.
 
 ## Steps to Build the Ecoregions Map:
 
