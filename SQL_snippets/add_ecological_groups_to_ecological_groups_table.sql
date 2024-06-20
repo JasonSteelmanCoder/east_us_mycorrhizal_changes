@@ -48,3 +48,9 @@ UPDATE ecological_groups
 SET ecological_group = 'Endogeic'
 WHERE name = 'Allolobophoridella eiseni';		-- The `speciesbinomial` in Phillips matches the `name` in Drake.
 
+-- Fill out the remainder of the table with data from Callaham
+
+UPDATE ecological_groups
+SET ecological_group = ecological_groups_callaham.ecological_group
+FROM ecological_groups_callaham
+WHERE ecological_groups.name = ecological_groups_callaham.name;
