@@ -55,11 +55,11 @@ cursor.execute(f"""
     ORDER BY statecd, countycd;
 """)
 
-epogeics = cursor.fetchall()
+epigeics = cursor.fetchall()
 
-epogeics_df = pd.DataFrame(epogeics, columns=["statecd", "countycd", "has_epogeics"])
+epigeics_df = pd.DataFrame(epigeics, columns=["statecd", "countycd", "has_epigeics"])
 
-output_2 = pd.merge(output_1, epogeics_df, on=['statecd', 'countycd'], how="left")
+output_2 = pd.merge(output_1, epigeics_df, on=['statecd', 'countycd'], how="left")
 
 # find if there are ANECIC invasive species in each county
 cursor.execute(f"""
