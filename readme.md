@@ -215,3 +215,36 @@ This map uses a raster provided by the US Forest Service, delineating the ecoreg
     
     7. Assign colors to the layer based on region_id
 
+## Invasive Earthworms Maps:
+
+The invasive earthworms maps reflect, for each county, whether the data shows reports of invasive earthworms in that county. There is a map for invasive worms generally, and one each for epigeic, anecic, endogeic, and epi-endogeic ecological groups.
+
+## Data Used for the Invasive Earthworms Maps:
+
+Reports of earthworm presence are from the Drake dataset. Assignments of species to ecological groups is based on Phillips, with input from Mac Callaham.
+
+## Steps to Build the Invasive Earthworms Maps:
+
+    1. Get the 1880_philips sites and worm_species_occurrence tables, worms_drake, and ecological_groups_callaham datasets
+
+    2. Add datasets to database as sites_phillips, worm_sp_occur_phillips, sites_phillips, worms_drake, and ecological_groups_callaham
+
+    3. Use add_statecd_to_worms_drake.sql to make columns in worms_drake table with statecd and countycd that are compatible with the rest of the project
+
+    4. Use create_ecological_groups_table.sql to create a table for ecological groups of species found in the eastern US
+
+    5. Add an empty column, ecological_group, to the ecological_groups table
+
+    6. Use add_ecological_groups_to_ecological_groups_table.sql to update the ecological_groups table
+
+    7. Use ecological_group_finder.py to make a csv with the presence of each ecological group for each county
+
+    8. Add the east_us_shapefile to your map (see the AM/EM pipeline directions for more details)
+
+    9. Add your ecological groups csv to the map as a table (don't forget to export it and remove the original from the project)
+    
+    10. Make a column in the exported table that combines statecd and countycd into a single value for each row
+    
+    11. Join the table with the shapefile
+    
+    12. Color your map layer according to whichever ecological group(s) you want to display
