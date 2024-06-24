@@ -19,7 +19,7 @@ SELECT
     SUM(dayssample * criteria1 / 100) AS validdays,         -- multiply the timespan of the experiment by the percent of days with valid measurements
     ROUND((SUM(totaln)/(SUM(dayssample * criteria1 / 100)) * 365)::DECIMAL, 3) AS n_kg_ha_yr        -- find the daily n deposition, then multiply by 365 to annualize it
 FROM relevant_chem 
-JOIN sites 
+LEFT JOIN sites 
 ON relevant_chem.siteid = sites.siteid
 GROUP BY relevant_chem.siteid, latitude, longitude;
 

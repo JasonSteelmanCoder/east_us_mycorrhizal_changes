@@ -5,7 +5,7 @@ WITH
 assigned AS (
   SELECT worm_sp_occur_phillips.family, worm_sp_occur_phillips.genus, worm_sp_occur_phillips.speciesbinomial, worm_sp_occur_phillips.ecological_group 
   FROM ecological_groups
-  JOIN worm_sp_occur_phillips
+  LEFT JOIN worm_sp_occur_phillips
   ON ecological_groups.family = worm_sp_occur_phillips.family AND ecological_groups.genus = worm_sp_occur_phillips.genus AND ecological_groups.name = worm_sp_occur_phillips.speciesbinomial
   WHERE worm_sp_occur_phillips.ecological_group != 'Unknown'
   GROUP BY worm_sp_occur_phillips.family, worm_sp_occur_phillips.genus, worm_sp_occur_phillips.speciesbinomial, worm_sp_occur_phillips.ecological_group 
