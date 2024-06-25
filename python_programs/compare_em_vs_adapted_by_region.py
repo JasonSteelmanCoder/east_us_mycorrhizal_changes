@@ -46,7 +46,9 @@ for region in regions:
     polynomial = np.poly1d(coefficients)
     y_fit = polynomial(pcts_adapted_array)
 
-    print(coefficients)
+    print('\n', end="")
+    print(region)
+    print(coefficients, end="")
     print(polynomial)
 
     plt.scatter(pcts_adapted_array, pcts_em_array)
@@ -56,5 +58,5 @@ for region in regions:
     plt.title(f'Percent of Fire Adaptation Versus Ectomycorrhizal Association:\n{current_region}')
     plt.legend()
 
-    plt.savefig(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/dot_plots/adaptation_by_county_{re.sub(r'[^a-zA-Z0-9_\-.]', '_', region)}.png")
+    # plt.savefig(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/dot_plots/adaptation_by_county_{re.sub(r'[^a-zA-Z0-9_\-.]', '_', region)}.png")
     plt.clf()
