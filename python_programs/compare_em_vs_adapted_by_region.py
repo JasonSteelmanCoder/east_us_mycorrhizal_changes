@@ -56,7 +56,8 @@ for region in regions:
     plt.xlabel('Percent of Basal Area Adapted to Fire')
     plt.ylabel('Percent of Basal Area With Ectomycorrhizal Association')
     plt.title(f'Percent of Fire Adaptation Versus Ectomycorrhizal Association:\n{current_region}')
+    plt.text(0.05, 0.91, f"{polynomial}", transform=plt.gca().transAxes, verticalalignment="top")
     plt.legend()
 
-    # plt.savefig(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/dot_plots/adaptation_by_county_{re.sub(r'[^a-zA-Z0-9_\-.]', '_', region)}.png")
+    plt.savefig(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/dot_plots/adaptation_by_county_{re.sub(r'[^a-zA-Z0-9_\-.]', '_', region)}.png")
     plt.clf()
