@@ -36,10 +36,10 @@ with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/phillips_us_sites.csv',
             new_fips = response_dict["County"]["FIPS"]
             fips_dict["site_name"].append(site_name)
             fips_dict["fips"].append(new_fips)
-            fips_dict["statecd"].append(str(new_fips[:2]))
+            fips_dict["statecd"].append(str(new_fips[:2]).lstrip('0'))
             fips_dict["countycd"].append(str(new_fips[2:]).lstrip('0'))
         else:
-            print(f"\nError on site {site_name}: {response.text}")
+            print(f"\nFIP not found for {site_name}. Report: {response.text}")
 
 # turn it all into a dataframe
 fips = pd.DataFrame(fips_dict)
