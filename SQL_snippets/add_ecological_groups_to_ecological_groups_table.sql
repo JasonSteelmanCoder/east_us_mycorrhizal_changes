@@ -16,8 +16,8 @@ SET ecological_group = assigned.ecological_group
 FROM assigned
 WHERE 
 	ecological_groups.family = assigned.family 
-  AND ecological_groups.genus = assigned.genus
-  AND ecological_groups.name = assigned.speciesbinomial;
+    AND ecological_groups.genus = assigned.genus
+    AND ecological_groups.name = assigned.speciesbinomial;
 
 -- Add some ecological group assignments based on manual inspection of the Phillips data
 UPDATE ecological_groups
