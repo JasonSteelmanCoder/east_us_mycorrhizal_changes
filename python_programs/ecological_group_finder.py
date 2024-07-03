@@ -17,7 +17,7 @@ connection = psycopg2.connect(
 cursor = connection.cursor()
 
 # find if there are invasive species at all in each county
-cursor.execute(f"""
+cursor.execute(r"""
     WITH 
     combos AS (
         WITH 
@@ -60,7 +60,7 @@ counties = cursor.fetchall()
 output_1 = pd.DataFrame(counties, columns=["statecd", "countycd", "has_invasives"])
 
 # find if there are EPIGEIC invasive species in each county
-cursor.execute(f"""
+cursor.execute(r"""
     WITH 
     combos AS (
         WITH 
@@ -105,7 +105,7 @@ epigeics_df = pd.DataFrame(epigeics, columns=["statecd", "countycd", "has_epigei
 output_2 = pd.merge(output_1, epigeics_df, on=['statecd', 'countycd'], how="left")
 
 # find if there are ANECIC invasive species in each county
-cursor.execute(f"""
+cursor.execute(r"""
     WITH 
     combos AS (
         WITH 
@@ -150,7 +150,7 @@ anecic_df = pd.DataFrame(anecics, columns=["statecd", "countycd", "has_anecic"])
 output_3 = pd.merge(output_2, anecic_df, on=["statecd", "countycd"], how="left")
 
 # find if there are ENDOGEIC invasive species in each county
-cursor.execute(f"""
+cursor.execute(r"""
     WITH 
     combos AS (
         WITH 
@@ -195,7 +195,7 @@ endogeic_df = pd.DataFrame(endogeics, columns=["statecd", "countycd", "has_endog
 output_4 = pd.merge(output_3, endogeic_df, on=["statecd", "countycd"], how="left")
 
 # find if there are EPI-ENDOGEIC invasive species in each county
-cursor.execute(f"""
+cursor.execute(r"""
     WITH 
     combos AS (
         WITH 
