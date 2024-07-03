@@ -87,7 +87,7 @@ for county_row in counties:
 
 # write output_contents to a csv file
 # replace the path with the location where you want the csv file to be written on your computer
-with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_fire_occurreces.csv", "w") as output_file:
+with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_fire.csv", "w") as output_file:
     output_file.write(output_contents)
 
 # clean up
