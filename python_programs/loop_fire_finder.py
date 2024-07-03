@@ -65,7 +65,7 @@ for county_row in counties:
         ON east_us_cond.plt_cn = east_us_plot.cn
         WHERE 
             east_us_plot.statecd = {statecd} AND east_us_plot.countycd = {countycd} AND
-            east_us_plot.invyr > 1979 AND east_us_plot.invyr < 2023 AND
+            east_us_plot.invyr > 1998 AND east_us_plot.invyr < 2023 AND
             (east_us_cond.industrialcd_fiadb IS NULL OR east_us_cond.industrialcd_fiadb = 0) AND
             (dstrbcd1 = 30 OR dstrbcd1 = 31 OR dstrbcd1 = 32
             or dstrbcd2 = 30  OR dstrbcd2 = 31 OR dstrbcd2 = 32
