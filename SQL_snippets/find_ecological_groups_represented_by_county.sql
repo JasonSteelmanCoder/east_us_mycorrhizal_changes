@@ -17,7 +17,7 @@
             COALESCE(ecological_groups.ecological_group IN ('Epigeic', 'Anecic', 'Endogeic', 'Epi-Endogeic'), false) AS is_invaded_row
         FROM east_us_counties
         LEFT JOIN worms_drake 
-        ON east_us_counties.statecd = worms_drake.statecd AND east_us_counties.countycd = worms_drake.countycd
+        ON worms_drake.origin != 'Nearctic' AND east_us_counties.statecd = worms_drake.statecd AND east_us_counties.countycd = worms_drake.countycd
         LEFT JOIN chang_fips
         ON chang_fips.statecd = east_us_counties.statecd AND chang_fips.countycd = east_us_counties.countycd
         LEFT JOIN phillips_locations
@@ -56,7 +56,7 @@
             COALESCE(ecological_groups.ecological_group = 'Epigeic', false) AS is_epigeic_row
         FROM east_us_counties
         LEFT JOIN worms_drake 
-        ON east_us_counties.statecd = worms_drake.statecd AND east_us_counties.countycd = worms_drake.countycd
+        ON worms_drake.origin != 'Nearctic' AND east_us_counties.statecd = worms_drake.statecd AND east_us_counties.countycd = worms_drake.countycd
         LEFT JOIN chang_fips
         ON chang_fips.statecd = east_us_counties.statecd AND chang_fips.countycd = east_us_counties.countycd
         LEFT JOIN phillips_locations
@@ -94,7 +94,7 @@
             COALESCE(ecological_groups.ecological_group = 'Anecic', false) AS is_anecic_row
         FROM east_us_counties
         LEFT JOIN worms_drake 
-        ON east_us_counties.statecd = worms_drake.statecd AND east_us_counties.countycd = worms_drake.countycd
+        ON worms_drake.origin != 'Nearctic' AND east_us_counties.statecd = worms_drake.statecd AND east_us_counties.countycd = worms_drake.countycd
         LEFT JOIN chang_fips
         ON chang_fips.statecd = east_us_counties.statecd AND chang_fips.countycd = east_us_counties.countycd
         LEFT JOIN phillips_locations
@@ -132,7 +132,7 @@
             COALESCE(ecological_groups.ecological_group = 'Endogeic', false) AS is_endogeic_row
         FROM east_us_counties
         LEFT JOIN worms_drake 
-        ON east_us_counties.statecd = worms_drake.statecd AND east_us_counties.countycd = worms_drake.countycd
+        ON worms_drake.origin != 'Nearctic' AND east_us_counties.statecd = worms_drake.statecd AND east_us_counties.countycd = worms_drake.countycd
         LEFT JOIN chang_fips
         ON chang_fips.statecd = east_us_counties.statecd AND chang_fips.countycd = east_us_counties.countycd
         LEFT JOIN phillips_locations
@@ -170,7 +170,7 @@
             COALESCE(ecological_groups.ecological_group = 'Epi-Endogeic', false) AS is_epiendogeic_row
         FROM east_us_counties
         LEFT JOIN worms_drake 
-        ON east_us_counties.statecd = worms_drake.statecd AND east_us_counties.countycd = worms_drake.countycd
+        ON worms_drake.origin != 'Nearctic' AND east_us_counties.statecd = worms_drake.statecd AND east_us_counties.countycd = worms_drake.countycd
         LEFT JOIN chang_fips
         ON chang_fips.statecd = east_us_counties.statecd AND chang_fips.countycd = east_us_counties.countycd
         LEFT JOIN phillips_locations
