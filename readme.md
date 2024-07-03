@@ -79,8 +79,8 @@ classifications are included in the 'source' column of that table.
 
 ## Fire Frequency Map:
 
-This map tracks how many times in the study period (1980 - 2022) a forest plot within the county was 
-observed to have fire damage. 
+This map tracks how many times a forest plot within the county was 
+observed to have fire damage between 1999 and 2023. 
 
 ## Data Used for the Fire Frequency Map:
 
@@ -105,7 +105,7 @@ This data comes from the plot table of the FIA database.
     
     7. Join the table with the shapefile
     
-    8. Color counties by the attribute firedplots
+    8. Color counties by the attribute burnedplots
 
 ## Temperature and Precipitation Maps:
 
