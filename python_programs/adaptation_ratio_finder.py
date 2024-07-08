@@ -1,9 +1,10 @@
 """
 
-This program connects to the PostgreSQL database, pulls down data from the east_us_tree, . . . 
-It outputs its findings to a csv file.
+This program connects to the PostgreSQL database, pulls down data from the east_us_tree, 
+ref_species, and fire_adaptation tables. It outputs its findings to a csv file.
 
-For this program to work, you need to have the tree, . . . tables for each state . . .
+For this program to work, you need to have the tree table for each state compiled into one 
+east_us_tree table.
 
 This program accesses details for connecting to the database through a .env file. 
 

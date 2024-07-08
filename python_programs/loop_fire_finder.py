@@ -59,7 +59,7 @@ for county_row in counties:
 
     # count all instances where fire damage was reported on a plot in the county between 1980 and 2022 
     cursor.execute(f"""
-        SELECT  east_us_plot.statecd, east_us_plot.unitcd, east_us_plot.countycd, COUNT(east_us_plot.invyr) AS burnedplots
+        SELECT east_us_plot.statecd, east_us_plot.unitcd, east_us_plot.countycd, COUNT(east_us_plot.invyr) AS burnedplots
         FROM east_us_cond 
         LEFT JOIN east_us_plot
         ON east_us_cond.plt_cn = east_us_plot.cn
