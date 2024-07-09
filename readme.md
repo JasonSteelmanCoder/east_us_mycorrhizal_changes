@@ -221,30 +221,52 @@ The invasive earthworms maps reflect, for each county, whether the data shows re
 
 ## Data Used for the Invasive Earthworms Maps:
 
-Reports of earthworm presence are from the Drake dataset. Assignments of species to ecological groups is based on Phillips, with input from Mac Callaham.
+Reports of earthworm presence are from the Phillips, Chang, and Drake datasets. Assignments of species to ecological groups is based on Phillips, with input from Mac Callaham. All of the observations reported by Chang are non-native. Some of the Phillips data is labeled native or non-native. That has been supplemented by Mac Callaham for species that have values of NA in the Phillips data. Drake observations were labeled non-native if Drake reports them as not being Nearctic. Nearctic species, meanwhile, were scrutinized by Mac as well.
 
 ## Steps to Build the Invasive Earthworms Maps:
 
-    1. Get the 1880_philips sites and worm_species_occurrence tables, worms_drake, and ecological_groups_callaham datasets
-
-    2. Add datasets to database as sites_phillips, worm_sp_occur_phillips, sites_phillips, worms_drake, and ecological_groups_callaham
-
-    3. Use add_statecd_to_worms_drake.sql to make columns in worms_drake table with statecd and countycd that are compatible with the rest of the project
-
-    4. Use create_ecological_groups_table.sql to create a table for ecological groups of species found in the eastern US
-
-    5. Add an empty column, ecological_group, to the ecological_groups table
-
-    6. Use add_ecological_groups_to_ecological_groups_table.sql to update the ecological_groups table
-
-    7. Use ecological_group_finder.py to make a csv with the presence of each ecological group for each county
-
-    8. Add the east_us_shapefile to your map (see the AM/EM pipeline directions for more details)
-
-    9. Add your ecological groups csv to the map as a table (don't forget to export it and remove the original from the project)
+    1. Get 1880_philips sites and worm_species_occurrence, worms_drake, ecological_groups_callaham, drake_nearctic_worms___presumed_native_to_east_us_MKT_MAC, and phillips_worms_in_east_us_without_native_assignment_MKT_MAC datasets
     
-    10. Make a column in the exported table that combines statecd and countycd into a single value for each row
+    2. Add datasets to database as sites_phillips, worm_sp_occur_phillips, worms_drake, ecological_groups_callaham, drake_nativeness, and phillips_nativeness, respectively
     
-    11. Join the table with the shapefile
+    3. Use update_phillips_native_column.sql to eliminate some of the 'NA' values in Phillips' 'native' column
     
-    12. Color your map layer according to whichever ecological group(s) you want to display
+    4. Make a csv from phillips_sites site_name, latitude_decimal_degrees, longitude_decimal_degrees
+    
+    5. Run lat_long_to_county.py to get counties for each site in the csv
+    
+    6. Add the phillips_sites_fips.csv into the database as phillips_sites_fips 
+    
+    7. Download county_fips_master.csv from https://github.com/kjhealy/fips-codes/blob/master/county_fips_master.csv
+    
+    8. Copy county_fips_master.csv into the database as county_fips
+    
+    9. Run make_east_us_counties_table_from_county_fips_table.sql  
+    
+    10. Get the "Chang et al supplement" file and convert it to a csv
+    
+    11. Add the "Chang et al supplement" file to the database as worms_chang
+
+    12. Run lat_long_to_county_chang.py to get counties for each site in the csv
+    
+    13. Add the resulting chang_fips csv as a table in the database
+    
+    14. Use add_statecd_to_worms_drake.sql to make columns in worms_drake table with statecd and countycd that are compatible with the rest of the project
+    
+    15. Use create_ecological_groups_table.sql to create a table for ecological groups of species found in the eastern US
+    
+    16. Add an empty column, ecological_group, to the ecological_groups table
+    
+    17. Use add_ecological_groups_to_ecological_groups_table.sql to update the ecological_groups table
+    
+    18. Use ecological_group_finder.py to make a csv with the presence of each ecological group for each county
+    
+    19. Add the east_us_shapefile to your map (see the AM/EM pipeline directions for more details)
+    
+    20. Add your ecological groups csv to the map as a table (don't forget to export it and remove the original from the project)
+    
+    21. Make a column in the exported table that combines statecd and countycd into a single value for each row
+    
+    22. Join the table with the shapefile
+    
+    23. Color your map layer according to whichever ecological group(s) you want to display
