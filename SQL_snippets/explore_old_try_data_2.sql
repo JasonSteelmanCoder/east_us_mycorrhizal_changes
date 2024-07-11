@@ -18,6 +18,6 @@ SELECT rank_by_basal_area, spcd common_name, genus, species, accspeciesname, ori
 FROM limited_trees
 INNER JOIN old_try_data_2
 ON 
-	dataname = 'Leaf Litter decomposition: decomposition rate constant k value: single exponential model: Yt=Yoe-kt'
+    dataname = 'Leaf Litter decomposition: decomposition rate constant k value: single exponential model: Yt=Yoe-kt'
   AND LOWER(TRIM(REGEXP_REPLACE(accspeciesname, '^(([^ ]+ ){2}).*$', '\1'))) = LOWER(TRIM(genus || ' ' || species))
   
