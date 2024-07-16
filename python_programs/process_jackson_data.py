@@ -6,6 +6,8 @@ load_dotenv()
 
 df = pd.read_csv(f'C:/Users/{os.getenv('MS_USER_NAME')}/Desktop/jackson_calculations_orig.csv')
 
+df['species'] = df['species'].str.replace('P.', 'Pinus')
+
 df = df.drop(columns=['adult_perc'])
 
 df['total_bark_thickness'] = df['outer_bark_thickness'] * 1.125
