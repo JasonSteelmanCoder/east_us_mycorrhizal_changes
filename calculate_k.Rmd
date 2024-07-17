@@ -1,0 +1,58 @@
+---
+title: "calculate k"
+author: "Melanie K. Taylor"
+date: "2024-07-16"
+output: pdf_document
+---
+
+```{r}
+#if needed install tidyverse and litterfitter
+library(litterfitter)
+library(tidyverse)
+library(dplyr)
+
+#set working directory
+setwd("C:/Users/melanietaylor/Desktop")
+
+#load litter values
+lit <- read.csv("C:/Users/melanietaylor/Desktop/k_values_g_per_g_with_duration_in_days_cornelissen.csv")
+```
+
+```{r}
+#calculate proportion litter remaining
+#calculate time in years
+lit <- lit %>% 
+  drop_na(proportion_mass_loss) %>%
+  mutate(p_litter_remaining = 1 - proportion_mass_loss,
+         length_yr = length_decomp_days/365)
+  
+
+#Get unique species
+all_species <- unique(lit$speciesname)
+
+#summary(fit)
+#plot(fit)
+#coef(fit)
+
+output <- data.frame(species = character(),
+                     k = double())
+
+#started to try to write loop:
+for (species in all_species) {
+
+  df <- filter(lit, speciesname == species)
+  
+  fit <- fit_litter(time=c(0, df$length_yr),
+                    mass.remaining = c(1, df$p_litter_remaining),
+                    model = "neg.exp",
+                    iters = 500)
+  line_output <- data.frame(species=species, 
+                            k=coef(fit))
+  
+  output <- rbind(output, line_output)
+}
+
+write.csv(output, "k_values_cornelissen.csv")
+
+```
+
