@@ -17,7 +17,7 @@ load_dotenv()
 def write_sql_query_to_make_csv_columns(table_name, path):
 
     with open(path, 'r') as file:
-        csv_reader = csv.reader(file, delimiter='\t')
+        csv_reader = csv.reader(file)
 
         # make the reader into a list of two rows
         csv_rows = []
@@ -64,4 +64,4 @@ def write_sql_query_to_make_csv_columns(table_name, path):
 
 if __name__ == "__main__":
     # replace the arguments below to use the function without exporting it.
-    write_sql_query_to_make_csv_columns('new_try_data', f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/new_try_data/new_try_data.csv')
+    write_sql_query_to_make_csv_columns('laughlan_relevant_trees', f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/k_values_in_pct_per_year_for_relevant_trees_mkt.csv')

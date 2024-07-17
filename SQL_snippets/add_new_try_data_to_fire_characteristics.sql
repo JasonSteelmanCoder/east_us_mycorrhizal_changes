@@ -1,10 +1,10 @@
-
+-- put bark thickness from cleaned_try_bark_diameter into fire_characteristics
 UPDATE fire_characteristics
 SET 
 	bark_dbh_ratio = subquery.avg_stdvalue, 
 	bark_dbh_source = 'TRY data 34741'
 FROM ( 
-  -- work from a version of cleaned_try_bark_diameter where each speckes is matched with its average stdvalue
+  -- work from a version of cleaned_try_bark_diameter where each species is matched with its average stdvalue
 	SELECT accspeciesname, AVG(stdvalue) AS avg_stdvalue FROM cleaned_try_bark_diameter GROUP BY accspeciesname
 ) AS subquery
 WHERE 
@@ -13,7 +13,7 @@ WHERE
 
 
 
-
+-- put mean_litter_cn data into fire_characteristics
 UPDATE fire_characteristics
 SET 
 	mean_litter_cn = subquery.avg_stdvalue, 
@@ -28,3 +28,6 @@ FROM (
 WHERE 
 	mean_litter_cn IS NULL
   AND LOWER(TRIM(BOTH ' ' FROM fire_characteristics.scientific_name)) = LOWER(TRIM(BOTH ' ' FROM subquery.accspeciesname))
+
+
+
