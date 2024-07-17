@@ -1,4 +1,16 @@
--- view the data for Cornelissen, neatly arranged
+-- k data is in several different units
+SELECT origunitstr, COUNT(origunitstr) 
+FROM cleaned_try_decomp 
+GROUP BY origunitstr
+ORDER BY count DESC
+
+-- g/g data is divided between two sources
+SELECT dataname, reference, COUNT(dataname)
+FROM cleaned_try_decomp
+WHERE origunitstr = 'g/g'
+GROUP BY dataname, reference
+
+-- view the data from Cornelissen, neatly arranged
 SELECT * 
 FROM new_try_data 
 WHERE reference LIKE 'Cornelissen%'
