@@ -30,10 +30,6 @@ lit <- lit %>%
 #Get unique species
 all_species <- unique(lit$speciesname)
 
-#summary(fit)
-#plot(fit)
-#coef(fit)
-
 output <- data.frame(species = character(),
                      k = double())
 
