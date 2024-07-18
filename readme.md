@@ -104,8 +104,10 @@ This data comes from the plot table of the FIA database.
     county codes into one value
     
     7. Join the table with the shapefile
+
+    8. Calculate a new column in the shapefile's attribute table by dividing fire_observations by plots
     
-    8. Color counties by the attribute burnedplots
+    9. Color counties by the calculated column
 
 ## Temperature and Precipitation Maps:
 
