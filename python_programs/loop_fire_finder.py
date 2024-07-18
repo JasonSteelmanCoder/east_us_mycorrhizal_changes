@@ -21,7 +21,7 @@ import os
 load_dotenv()
 
 # start the output contents by inserting the titles of each column in the output csv
-output_contents = "statecd,unitcd,countycd,burnedplots\n"
+output_contents = "statecd,unitcd,countycd,fire_observations,plots,observations\n"
 
 # Connect to the database using details from the .env file
 # On your local computer, you can replace the os.getenv() calls with the details of your 
@@ -79,7 +79,7 @@ for county_row in counties:
         LEFT JOIN east_us_cond 
         ON east_us_cond.plt_cn = east_us_plot.cn
         WHERE 
-            east_us_plot.statecd = 12 AND east_us_plot.countycd = 3 AND
+            east_us_plot.statecd = {statecd} AND east_us_plot.countycd = {countycd} AND
             east_us_plot.invyr > 1998 AND east_us_plot.invyr < 2023 AND
             (east_us_cond.industrialcd_fiadb IS NULL OR east_us_cond.industrialcd_fiadb = 0)
         GROUP BY east_us_plot.statecd, east_us_plot.unitcd, east_us_plot.countycd;
@@ -95,6 +95,10 @@ for county_row in counties:
         for county_row in rows:            # (there is only one row per SQL query)
             output_contents += f'{statecd},{unitcd},{countycd},'
             output_contents += str(county_row[3])
+            output_contents += ','
+            output_contents += str(county_row[4])
+            output_contents += ','
+            output_contents += str(county_row[5])
             output_contents += '\n' 
 
 # write output_contents to a csv file
