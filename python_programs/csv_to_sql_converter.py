@@ -64,4 +64,4 @@ def write_sql_query_to_make_csv_columns(table_name, path):
 
 if __name__ == "__main__":
     # replace the arguments below to use the function without exporting it.
-    write_sql_query_to_make_csv_columns('laughlan_relevant_trees', f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/k_values_in_pct_per_year_for_relevant_trees_mkt.csv')
+    write_sql_query_to_make_csv_columns('shudong_flame_and_litter', f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/shudong_flame_and_litter.csv')
