@@ -29,20 +29,21 @@ lit <- lit %>%
 #Get unique species
 all_species <- unique(lit$species)
 
-output <- data.frame(species = character(),
+output <- data.frame(speciesname = character(),
                      k = double())
 
 #started to try to write loop:
-for (species in all_species) {
+for (tree in all_species) {
 
-  df <- filter(lit, species == species)
+  df <- filter(lit, species == tree)
   
   fit <- fit_litter(time=c(0, df$length_yr),
                     mass.remaining = c(1, df$p_litter_remaining),
                     model = "neg.exp",
                     iters = 500)
-  line_output <- data.frame(species=species, 
+  line_output <- data.frame(speciesname=tree, 
                             k=coef(fit))
+  
   
   output <- rbind(output, line_output)
 }
