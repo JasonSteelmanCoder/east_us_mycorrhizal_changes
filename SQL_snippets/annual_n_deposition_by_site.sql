@@ -16,7 +16,7 @@ SELECT
     latitude, 
     longitude, 
     SUM(totaln) AS cumul_n, 
-    SUM(dayssample * criteria1 / 100) AS validdays,         -- multiply the timespan of the experiment by the percent of days with valid measurements
+    SUM(dayssample * criteria1::DECIMAL / 100) AS validdays,         -- multiply the timespan of the experiment by the percent of days with valid measurements
     ROUND((SUM(totaln)/(SUM(dayssample * criteria1 / 100)) * 365)::DECIMAL, 3) AS n_kg_ha_yr        -- find the daily n deposition, then multiply by 365 to annualize it
 FROM relevant_chem 
 LEFT JOIN sites 
