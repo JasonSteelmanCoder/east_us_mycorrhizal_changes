@@ -297,7 +297,7 @@ The data used is from RDS-2013-0009.6_Data_Format4_SQLITE.zip, downloaded at htt
     
     7. Calculate a new column in the attribute table using the python expression below. 
     
-        ~~~
+        ```
             # reports refers to the number of reports, called `Join count` in the attribute table
             # land_area is the land area of the county.
             # I divide land_area by 1000000 because it is recorded in my shapefile as a much larger into
@@ -305,6 +305,6 @@ The data used is from RDS-2013-0009.6_Data_Format4_SQLITE.zip, downloaded at htt
             
             def double_div(reports, land_area):
                 return (reports / (land_area / 1000000)) / 28
-        ~~~  
+        ```  
     
     8. Color your map based on the new column. The units will be reports/km^2/year
