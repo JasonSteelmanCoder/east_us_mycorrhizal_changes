@@ -9,10 +9,11 @@ conn = sqlite3.connect(f'C:/Users/{os.getenv('MS_USER_NAME')}/Desktop/jo_data_re
 cursor = conn.cursor()
 
 cursor.execute('''
-    SELECT fips_code, count(fips_code) 
+    SELECT latitude, longitude, discovery_date, COUNT(discovery_date) AS count
     FROM fires 
-    WHERE UPPER(TRIM(state)) IN ('PA', 'NH', 'MD', 'IL', 'TN', 'OH', 'KY', 'NY', 'NJ', 'MI', 'MA', 'AL', 'MS', 'IN', 'WV', 'VT', 'FL', 'ME', 'SC', 'WI', 'VA', 'NC', 'CT', 'DE', 'RI', 'GA')
-    group by fips_code
+    WHERE state IN ('PA', 'NH', 'MD', 'IL', 'TN', 'OH', 'KY', 'NY', 'NJ', 'MI', 'MA', 'AL', 'MS', 'IN', 'WV', 'VT', 'FL', 'ME', 'SC', 'WI', 'VA', 'NC', 'CT', 'DE', 'RI', 'GA')
+    GROUP BY latitude, longitude, discovery_date
+    ORDER BY count
 ''')
 
 rows = cursor.fetchall()
@@ -36,10 +37,38 @@ conn.close()
     # SELECT state, count(state) 
     # FROM fires 
     # WHERE UPPER(TRIM(state)) IN ('PA', 'NH', 'MD', 'IL', 'TN', 'OH', 'KY', 'NY', 'NJ', 'MI', 'MA', 'AL', 'MS', 'IN', 'WV', 'VT', 'FL', 'ME', 'SC', 'WI', 'VA', 'NC', 'CT', 'DE', 'RI', 'GA')
-    # group by state
+    # GROUP BY state
 
 # GET FIRES REPORTED PER COUNTY
     # SELECT fips_code, count(fips_code) 
     # FROM fires 
     # WHERE UPPER(TRIM(state)) IN ('PA', 'NH', 'MD', 'IL', 'TN', 'OH', 'KY', 'NY', 'NJ', 'MI', 'MA', 'AL', 'MS', 'IN', 'WV', 'VT', 'FL', 'ME', 'SC', 'WI', 'VA', 'NC', 'CT', 'DE', 'RI', 'GA')
-    # group by fips_code
+    # GROUP BY fips_code
+
+# FIND DUPLICATE FIRES
+    # SELECT latitude, longitude, fire_year, COUNT(fire_year) AS count
+    # FROM fires 
+    # WHERE state IN ('PA', 'NH', 'MD', 'IL', 'TN', 'OH', 'KY', 'NY', 'NJ', 'MI', 'MA', 'AL', 'MS', 'IN', 'WV', 'VT', 'FL', 'ME', 'SC', 'WI', 'VA', 'NC', 'CT', 'DE', 'RI', 'GA')
+    # GROUP BY latitude, longitude, fire_year
+    # ORDER BY count
+
+# EXAMINE ONE EXAMPLE OF DUPLICATE FIRES
+    # SELECT *
+    # FROM fires 
+    # WHERE latitude = '41.913769' AND longitude = '-71.908096'
+
+# FIND DUPLICATES WHEN GROUPING BY DATE
+    # SELECT latitude, longitude, discovery_date, COUNT(discovery_date) AS count
+    # FROM fires 
+    # WHERE state IN ('PA', 'NH', 'MD', 'IL', 'TN', 'OH', 'KY', 'NY', 'NJ', 'MI', 'MA', 'AL', 'MS', 'IN', 'WV', 'VT', 'FL', 'ME', 'SC', 'WI', 'VA', 'NC', 'CT', 'DE', 'RI', 'GA')
+    # GROUP BY latitude, longitude, discovery_date
+    # ORDER BY count
+
+# EXAMINE ONE EXAMPLE OF A DUPLICATE WHEN GROUPING BY DATE
+    # SELECT *
+    # FROM fires 
+    # WHERE latitude = '31.3955' AND longitude = '-82.8381' AND discovery_date = '12/14/1995'
+
+# PUT INDEX ON fires
+    # CREATE INDEX unique_fires
+    # ON fires(latitude, longitude, discovery_date)
