@@ -272,3 +272,39 @@ Reports of earthworm presence are from the Phillips, Chang, and Drake datasets. 
     22. Join the table with the shapefile
     
     23. Color your map layer according to whichever ecological group(s) you want to display
+
+## Fire Reports Map:
+
+For each county, this map measures how many official reports of wildfires have been filed in lattitudes and longitudes corresponding to that county, per year, per km^2.
+
+## Data Used for the Fire Reports Map:
+
+The data used is from RDS-2013-0009.6_Data_Format4_SQLITE.zip, downloaded at https://www.fs.usda.gov/rds/archive/catalog/RDS-2013-0009.6
+
+## Steps to Build the Fire Reports Map:
+
+    1. Download RDS-2013-0009.6_Data_Format4_SQLITE.zip from https://www.fs.usda.gov/rds/archive/catalog/RDS-2013-0009.6
+
+    2. Optionally use jo_data_explorer.py to explore the data. Several useful queries are in the comments at the bottom of the program.
+
+    3. Use fire_reports_by_latitude_finder.py to create a csv with unique fire reports
+    
+    4. In an ArcGIS project, add a shapefile of the eastern US, along with the csv you just created (fire_report_unique_lat_long_dates.csv)
+    
+    5. Use the Table to Point tool to make points based on the latitudes and longitudes in the table
+    
+    6. Do a spatial merge between the map and the points to get a feature layer where all of the counties have a column, Join Count, that shows the number of reports that happened within the county's borders
+    
+    7. Calculate a new column in the attribute table using the python expression below. 
+    
+        ```
+            # reports refers to the number of reports, called `Join count` in the attribute table
+            # land_area is the land area of the county.
+            # I divide land_area by 1000000 because it is recorded in my shapefile as a much larger into
+            # 28 is the number of years in the data. We divide by it to get a per-year rate
+            
+            def double_div(reports, land_area):
+                return (reports / (land_area / 1000000)) / 28
+        ```  
+    
+    8. Color your map based on the new column. The units will be reports/km^2/year
