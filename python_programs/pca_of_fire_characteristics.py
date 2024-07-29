@@ -20,11 +20,15 @@ labels = df.iloc[:, 1]
 
 X_standardized = StandardScaler().fit_transform(X)
 
-pca = PCA(n_components=2)
+pca = PCA()
 principal_components = pca.fit_transform(X_standardized)
+eigenvectors = pca.components_
 
 plt.figure(figsize = (10, 8))
 plt.scatter(principal_components[:, 0], principal_components[:, 1], c = colors, edgecolor='k', s=sizes * 0.01, linewidths=0.5)
+for i in range(eigenvectors.shape[0]):
+    plt.quiver(0, 0, eigenvectors[i, 0], eigenvectors[i, 1], angles='xy', scale_units='xy', scale=0.22, alpha=0.25)
+    plt.annotate(['Flame Duration', 'Percent Consumed', 'Litter k', 'Litter C:N ', 'Bark Thickness to Diameter'][i], (eigenvectors[i, 0] * 3.5, eigenvectors[i, 1] * 3.5), weight='bold', alpha=0.5)
 texts = []
 for i, label in enumerate(labels):
     texts.append(plt.annotate(label, (principal_components[i, 0], principal_components[i, 1]), fontsize = 7))
