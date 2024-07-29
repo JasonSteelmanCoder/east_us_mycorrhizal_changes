@@ -10,4 +10,4 @@ input_df = pd.read_csv(f'C:/Users/{os.getenv('MS_USER_NAME')}/Desktop/pca_input_
 
 input_df["pct_of_basal"] = common_trees_df["pct_of_basal"]
 
-input_df.to_csv(f'C:/Users/{os.getenv('MS_USER_NAME')}/Desktop/pca_input_7_29_2024.csv')
+input_df.to_csv(f'C:/Users/{os.getenv('MS_USER_NAME')}/Desktop/pca_input_7_29_2024.csv', index=False)
