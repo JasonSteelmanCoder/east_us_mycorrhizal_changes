@@ -14,6 +14,7 @@ df = pd.read_csv(f'C:/Users/{os.getenv('MS_USER_NAME')}/Desktop/pca_input_7_24_2
 
 X = df.iloc[:, 2:].values
 colors = df.iloc[:, 0].values
+sizes = 50
 # labels = df.iloc[:, 1]
 
 X_standardized = StandardScaler().fit_transform(X)
@@ -22,7 +23,7 @@ pca = PCA(n_components=2)
 principal_components = pca.fit_transform(X_standardized)
 
 plt.figure(figsize = (8, 6))
-plt.scatter(principal_components[:, 0], principal_components[:, 1], c = colors, cmap = 'viridis', edgecolor='k', s=50)
+plt.scatter(principal_components[:, 0], principal_components[:, 1], c = colors, cmap = 'viridis', edgecolor='k', s=sizes)
 # for i, label in enumerate(labels):
 #     plt.annotate(label, (principal_components[i, 0], principal_components[i, 1]))
 plt.xlabel('PC1')
