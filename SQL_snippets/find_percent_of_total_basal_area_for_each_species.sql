@@ -1,3 +1,4 @@
+
 WITH 
 spcd_by_basal AS (
 
@@ -8,7 +9,7 @@ spcd_by_basal AS (
 
   WHERE 
 
-  east_us_tree.invyr > 1979 AND east_us_tree.invyr < 1999 AND									-- at t1
+  east_us_tree.invyr > 1979 AND east_us_tree.invyr < 2023 AND									-- for duration
 
   (east_us_cond.industrialcd_fiadb IS NULL OR east_us_cond.industrialcd_fiadb = 0) AND	-- exclude timberland            
   east_us_tree.statuscd = 1			-- only count live trees            
@@ -24,7 +25,8 @@ SELECT
   
   -- MAKE SURE YOU CHANGE THE TOTAL BASAL AREA IN THE LINE BELOW WHEN CHANGING TIMEFRAMES!
   
-  ROUND((basal_area::decimal / 544987.33) * 100, 5) AS pct_of_basal_t1
+  ROUND((basal_area::decimal / 2177806.18) * 100, 5) AS pct_of_basal
 FROM spcd_by_basal
 INNER JOIN ref_species
 ON ref_species.spcd = spcd_by_basal.spcd
+ORDER BY pct_of_basal DESC
