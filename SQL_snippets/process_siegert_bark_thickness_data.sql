@@ -11,3 +11,5 @@ SELECT
   (AVG(thick_mm)) / (AVG(dbh_cm * 10)) AS bark_diameter_ratio
 FROM siegert_bark_thickness
 GROUP BY species
+
+
