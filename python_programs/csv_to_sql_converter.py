@@ -64,4 +64,4 @@ def write_sql_query_to_make_csv_columns(table_name, path):
 
 if __name__ == "__main__":
     # replace the arguments below to use the function without exporting it.
-    write_sql_query_to_make_csv_columns('stevens_fire_characteristics', f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/stevens_fire_characteristics.csv')
+    write_sql_query_to_make_csv_columns('necn_characteristics', f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/NECN_combined.csv')
