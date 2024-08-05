@@ -15,7 +15,7 @@ load_dotenv()
 save_to = f'C:/Users/{os.getenv('MS_USER_NAME')}/Pictures/optimized_pcas/automatic_saves'
 
 # SET WHETHER TO SIZE THE POINTS BY BASAL AREA HERE:
-size_points = False
+size_points = True
 
 for i in range(3, 8):
 # for i in range(5, 6):
@@ -138,10 +138,14 @@ for i in range(3, 8):
     else:
         size_assignment = 150
     plt.scatter(points_win[:, 0], points_win[:, 1], c=colors, edgecolor='k', s = size_assignment, linewidths=0.5)
+    max_x = max(abs(max(points_win[:, 0])), abs(min(points_win[:, 0]))) 
+    max_y = max(abs(max(points_win[:, 1])), abs(min(points_win[:, 1])))
+    plt.xlim(-max_x - 0.25, max_x + 0.25)
+    plt.ylim(-max_y - 0.25, max_y + 0.25)
     texts = []
     for k in range(loadings.shape[0]):
-        plt.quiver(0, 0, loadings[k, 0], loadings[k, 1], angles='xy', scale_units='xy', scale=0.5, alpha=0.25)
-        texts.append(plt.annotate(winning_columns[k], (loadings[k, 0] * 1.5, loadings[k, 1] * 1.5), weight='bold', alpha=0.5))
+        plt.quiver(0, 0, loadings[k, 0], loadings[k, 1], angles='xy', scale_units='xy', scale=0.23, alpha=0.25)
+        plt.annotate(winning_columns[k], (loadings[k, 0] * 4.3 + 1, loadings[k, 1] * 4), ha='right', annotation_clip=False, weight='bold', alpha=0.5)
     for m, label in enumerate(labels):
         texts.append(plt.annotate(label, (points_win[m, 0], points_win[m, 1]), fontsize=7))
     adjust_text(texts, only_move={'texts':'xy'})
