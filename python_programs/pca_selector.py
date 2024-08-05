@@ -14,6 +14,9 @@ load_dotenv()
 # SET THE SAVE FOLDER HERE:
 save_to = f'C:/Users/{os.getenv('MS_USER_NAME')}/Pictures/optimized_pcas/automatic_saves'
 
+# SET WHETHER TO SIZE THE POINTS BY BASAL AREA HERE:
+size_points = False
+
 for i in range(3, 8):
 # for i in range(5, 6):
     num_variables = i
@@ -130,7 +133,11 @@ for i in range(3, 8):
     loadings = pca_win.components_.T * np.sqrt(pca_win.explained_variance_)
 
     plt.figure(figsize=(10, 8))
-    plt.scatter(points_win[:, 0], points_win[:, 1], c=colors, edgecolor='k', s = sizes * 150, linewidths=0.5)
+    if size_points == True:
+        size_assignment = sizes * 150
+    else:
+        size_assignment = 150
+    plt.scatter(points_win[:, 0], points_win[:, 1], c=colors, edgecolor='k', s = size_assignment, linewidths=0.5)
     texts = []
     for k in range(loadings.shape[0]):
         plt.quiver(0, 0, loadings[k, 0], loadings[k, 1], angles='xy', scale_units='xy', scale=0.5, alpha=0.25)
