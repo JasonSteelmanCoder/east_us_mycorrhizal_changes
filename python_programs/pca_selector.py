@@ -77,7 +77,7 @@ for i in range(3, 8):
         X = subframe.values
         X_standardized = StandardScaler().fit_transform(X)
         pca = PCA()
-        principal_components = pca.fit_transform(X_standardized)
+        points = pca.fit_transform(X_standardized)
         variance = pca.explained_variance_ratio_
         
         current_variance = variance[0] + variance[1]
@@ -126,17 +126,17 @@ for i in range(3, 8):
     X_win_standardized = StandardScaler().fit_transform(X_win)
 
     pca_win = PCA()
-    principal_components_win = pca_win.fit_transform(X_win_standardized)
+    points_win = pca_win.fit_transform(X_win_standardized)
     loadings = pca_win.components_.T * np.sqrt(pca_win.explained_variance_)
 
     plt.figure(figsize=(10, 8))
-    plt.scatter(principal_components_win[:, 0], principal_components_win[:, 1], c=colors, edgecolor='k', s = sizes * 150, linewidths=0.5)
+    plt.scatter(points_win[:, 0], points_win[:, 1], c=colors, edgecolor='k', s = sizes * 150, linewidths=0.5)
     texts = []
     for k in range(loadings.shape[0]):
         plt.quiver(0, 0, loadings[k, 0], loadings[k, 1], angles='xy', scale_units='xy', scale=0.5, alpha=0.25)
         texts.append(plt.annotate(winning_columns[k], (loadings[k, 0] * 1.5, loadings[k, 1] * 1.5), weight='bold', alpha=0.5))
     for m, label in enumerate(labels):
-        texts.append(plt.annotate(label, (principal_components_win[m, 0], principal_components_win[m, 1]), fontsize=7))
+        texts.append(plt.annotate(label, (points_win[m, 0], points_win[m, 1]), fontsize=7))
     adjust_text(texts, only_move={'texts':'xy'})
     plt.xlabel('PC1')
     plt.ylabel('PC2')
