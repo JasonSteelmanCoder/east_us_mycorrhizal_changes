@@ -29,11 +29,13 @@ encoded_target = le.transform(target)
 clf = DecisionTreeClassifier()
 clf.fit(encoded_features, encoded_target)
 
+# PREDICT A NEW SPECIES
 # new_instance = [43.7,91.1,None,50.0625,0.047,23,215.9]
 # predicted_adaptation = clf.predict([new_instance])
 # decoded_predicted_adaptation = le.inverse_transform(predicted_adaptation)
 # print(decoded_predicted_adaptation)
 
+# CHECK PERMUTATION IMPORTANCE OF EACH VARIABLE
 # imp_data = permutation_importance(clf, encoded_features, encoded_target, n_repeats=100000, n_jobs=-1)      # 100000 repeats = ~5 minutes runtime
 # importances = imp_data.importances_mean
 # print('\n')
@@ -48,6 +50,7 @@ clf.fit(encoded_features, encoded_target)
 # print(f"smoulder_duration: \t\t{importances[6]}")
 # print('\n')
 
+# CHECK ACCURACY OF PREDICTIONS USING TWO METHODS
 loo_model = DecisionTreeClassifier()
 loo = LeaveOneOut()
 loo_scores = cross_val_score(loo_model, encoded_features, encoded_target, cv=loo)
@@ -57,3 +60,22 @@ kf_model = DecisionTreeClassifier()
 kf = KFold(n_splits=3, shuffle=True, random_state=1)
 kf_scores = cross_val_score(kf_model, encoded_features, encoded_target, cv=kf)
 print(f"k-Fold Accuracy for myco: {kf_scores.mean() * 100}%")
+
+# CHECK ACCURACY OF PREDICTIONS AGAINST SPECIES WITH 6/7 VARIABLES
+test_data = pd.read_csv(f'C:/Users/{os.getenv('MS_USER_NAME')}/Desktop/input_to_accuracy_test.csv')
+
+test_features_df = test_data.iloc[:, 1:8]
+test_features_lol = test_features_df.values.tolist()
+
+test_target = list(test_data.iloc[:, 8])
+
+flattened_test_features = []
+for k in range(7):
+    for test_value in test_features_df.iloc[:, k]:
+        flattened_test_features.append(test_value)
+
+encoded_test_features = [item for item in test_features_lol]
+encoded_test_target = le.transform(test_target)
+
+test_accuracy = clf.score(encoded_test_features, encoded_test_target)
+print(f'Test accuracy: {test_accuracy * 100}%')
