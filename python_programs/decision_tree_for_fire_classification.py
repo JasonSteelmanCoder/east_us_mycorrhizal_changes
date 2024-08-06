@@ -29,7 +29,7 @@ encoded_target = le.transform(target)
 clf = DecisionTreeClassifier()
 clf.fit(encoded_features, encoded_target)
 
-imp_data = permutation_importance(clf, encoded_features, encoded_target, n_repeats=700)
+imp_data = permutation_importance(clf, encoded_features, encoded_target, n_repeats=700, n_jobs=-1)
 importances = imp_data.importances_mean
 print('\n')
 print("IMPORTANCE SCORES")
