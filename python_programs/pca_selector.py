@@ -92,7 +92,7 @@ for i in range(3, 8):
             print(f'explained variance in two PC\'s: {winning_variance}')
             print('\n')
 
-    # plot the PCA for the winning combination of variables
+    # get the data from the database to plot the winning pca
         
     winning_columns = []
 
@@ -115,6 +115,7 @@ for i in range(3, 8):
 
     winning_rows = cursor.fetchall()
 
+    # prepare the data to be plotted
     output_columns = ["scientific_name", "color_by_association", "pct_basal_area"]
     output_columns.extend(winning_columns)
 
@@ -132,6 +133,7 @@ for i in range(3, 8):
     points_win = pca_win.fit_transform(X_win_standardized)
     loadings = pca_win.components_.T * np.sqrt(pca_win.explained_variance_)
 
+    # plot the data for the winning PCA
     plt.figure(figsize=(10, 8))
     if size_points == True:
         size_assignment = sizes * 150
@@ -154,5 +156,6 @@ for i in range(3, 8):
     plt.title(f'PCA of {num_variables} Variables:\n{', '.join(winning_columns)}')
     plt.savefig(f'{save_to}/{num_variables}d.png')
 
+    # clean up
     cursor.close()
     connection.close()
