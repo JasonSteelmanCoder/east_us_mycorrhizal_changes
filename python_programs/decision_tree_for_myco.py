@@ -5,6 +5,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.inspection import permutation_importance
 from sklearn.model_selection import LeaveOneOut, KFold, cross_val_score
+from statistics import mean
 
 load_dotenv()
 
@@ -26,7 +27,7 @@ le.fit(target)
 encoded_features = [item for item in features_lst_of_lsts]
 encoded_target = le.transform(target)
 
-clf = DecisionTreeClassifier()
+clf = DecisionTreeClassifier(random_state=15)
 clf.fit(encoded_features, encoded_target)
 
 # PREDICT A NEW SPECIES
@@ -51,15 +52,18 @@ clf.fit(encoded_features, encoded_target)
 # print('\n')
 
 # CHECK ACCURACY OF PREDICTIONS USING TWO METHODS
-loo_model = DecisionTreeClassifier()
+loo_model = DecisionTreeClassifier(random_state=15)
 loo = LeaveOneOut()
 loo_scores = cross_val_score(loo_model, encoded_features, encoded_target, cv=loo)
 print(f"LOO Accuracy for myco: {loo_scores.mean() * 100}%")
 
-kf_model = DecisionTreeClassifier()
-kf = KFold(n_splits=3, shuffle=True, random_state=1)
-kf_scores = cross_val_score(kf_model, encoded_features, encoded_target, cv=kf)
-print(f"k-Fold Accuracy for myco: {kf_scores.mean() * 100}%")
+kf_model = DecisionTreeClassifier(random_state=15)
+kf = KFold(n_splits=5, shuffle=True)
+kf_scores = []
+for i in range(150):
+    scores = cross_val_score(kf_model, encoded_features, encoded_target, cv=kf)
+    kf_scores.append(scores.mean())
+print(f"k-Fold Accuracy for myco: {mean(kf_scores) * 100}%")
 
 # CHECK ACCURACY OF PREDICTIONS AGAINST SPECIES WITH 6/7 VARIABLES
 test_data = pd.read_csv(f'C:/Users/{os.getenv('MS_USER_NAME')}/Desktop/input_to_accuracy_test.csv')
