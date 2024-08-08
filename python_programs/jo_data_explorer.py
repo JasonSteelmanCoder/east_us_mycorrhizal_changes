@@ -9,11 +9,11 @@ conn = sqlite3.connect(f'C:/Users/{os.getenv('MS_USER_NAME')}/Desktop/jo_data_re
 cursor = conn.cursor()
 
 cursor.execute('''
-    SELECT latitude, longitude, discovery_date, COUNT(discovery_date) AS count
+    SELECT NWCG_CAUSE_CLASSIFICATION, NWCG_GENERAL_CAUSE
     FROM fires 
     WHERE state IN ('PA', 'NH', 'MD', 'IL', 'TN', 'OH', 'KY', 'NY', 'NJ', 'MI', 'MA', 'AL', 'MS', 'IN', 'WV', 'VT', 'FL', 'ME', 'SC', 'WI', 'VA', 'NC', 'CT', 'DE', 'RI', 'GA')
-    GROUP BY latitude, longitude, discovery_date
-    ORDER BY count
+    GROUP BY NWCG_CAUSE_CLASSIFICATION, NWCG_GENERAL_CAUSE
+    ORDER BY NWCG_CAUSE_CLASSIFICATION, NWCG_GENERAL_CAUSE
 ''')
 
 rows = cursor.fetchall()
