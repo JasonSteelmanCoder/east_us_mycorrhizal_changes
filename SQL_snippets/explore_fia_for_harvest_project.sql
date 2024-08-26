@@ -264,3 +264,85 @@ ON harvest_plots.statecd = east_us_counties.statecd
 GROUP BY state_name
 
 
+-- how many trees are observed more than once? (based on the natural key without year)
+-- 4993 out of 12075 trees, or about 41%
+WITH counting AS (
+  SELECT statecd, unitcd, countycd, plot, subp, tree, COUNT(invyr) AS num_obs 
+  FROM ri_tree
+  GROUP BY statecd, unitcd, countycd, plot, subp, tree 
+  ORDER BY COUNT(invyr) DESC
+)
+SELECT * 
+FROM counting
+WHERE num_obs > 1
+
+
+-- when a tree is observed more than once, how long elapses between the first and last observation?
+-- 4-17 years
+WITH counting AS (
+  SELECT statecd, unitcd, countycd, plot, subp, tree, COUNT(invyr) AS num_obs, MIN(invyr), MAX(invyr), MAX(invyr) - MIN(invyr) AS time_elapsed
+  FROM ri_tree
+  GROUP BY statecd, unitcd, countycd, plot, subp, tree 
+)
+SELECT * 
+FROM counting
+WHERE num_obs > 1
+ORDER BY time_elapsed
+
+
+-- How many trees have a prev_tre_cn?
+-- 8,141 out of 20,909 trees
+SELECT statecd, unitcd, countycd, plot, subp, tree, invyr, prev_tre_cn
+FROM ri_tree
+WHERE prev_tre_cn IS NOT NULL
+
+
+-- Are there duplicate values of prev_tre_cn?
+-- no.
+SELECT prev_tre_cn, COUNT(prev_tre_cn)
+FROM ri_tree
+GROUP BY prev_tre_cn
+ORDER BY count DESC
+
+-- Do trees ever have a prev_tre_cn that matches their current cn?
+-- no.
+SELECT cn, prev_tre_cn 
+FROM ri_tree
+WHERE cn = prev_tre_cn
+
+
+-- Can we locate cn's that match prev_tre_cn's?
+-- yes. all of them.
+SELECT cn FROM ri_tree WHERE cn IN (
+	SELECT prev_tre_cn FROM ri_tree
+)
+
+-- Are cn's that match prev_tre_cn's actually the same tree (as defined by the natural key minus year)?
+-- yes. see prev_cn_checker.py for definitive answer.
+SELECT prev_tre_cn FROM ri_tree WHERE prev_tre_cn IS NOT NULL
+	-- grabbed prev_tre_cn 62271032010538
+SELECT statecd, unitcd, countycd, plot, subp, tree FROM ri_tree WHERE prev_tre_cn = 62271032010538
+	-- results: 44	1	7	35	3	8
+SELECT statecd, unitcd, countycd, plot, subp, tree FROM ri_tree WHERE cn = 62271032010538
+	-- results: 44	1	7	35	3	8
+
+SELECT prev_tre_cn FROM ri_tree WHERE prev_tre_cn IS NOT NULL
+	-- grabbed prev_tre_cn 55943131010538
+SELECT statecd, unitcd, countycd, plot, subp, tree FROM ri_tree WHERE prev_tre_cn = 55943131010538
+	-- results: 44	1	7	77	3	2
+SELECT statecd, unitcd, countycd, plot, subp, tree FROM ri_tree WHERE cn = 55943131010538
+	-- results: 44	1	7	77	3	2
+
+
+-- show trees that are observed more than once, but don't have prev_tre_cn
+
+WITH counting AS (
+  SELECT statecd, unitcd, countycd, plot, subp, tree, COUNT(invyr) AS num_obs 
+  FROM ri_tree
+  WHERE prev_tre_cn IS NULL
+  GROUP BY statecd, unitcd, countycd, plot, subp, tree 
+  ORDER BY COUNT(invyr) DESC
+)
+SELECT * 
+FROM counting
+WHERE num_obs > 1
