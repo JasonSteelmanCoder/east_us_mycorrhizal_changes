@@ -166,3 +166,101 @@ GROUP BY state_name
 
 
 
+-- how many plots are there total?
+-- 296,972 plots
+SELECT statecd, countycd, plot 
+FROM east_us_plot 
+GROUP BY statecd, countycd, plot
+
+
+-- how many conditions are there?
+-- 3,160,166
+SELECT east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+FROM east_us_plot 
+INNER JOIN east_us_cond
+ON east_us_plot.statecd = east_us_cond.statecd AND east_us_plot.countycd = east_us_cond.countycd AND east_us_plot.plot = east_us_cond.plot
+
+
+-- how many plots have corresponding conditions?
+-- 296,972 plots. i.e. all of them.
+SELECT east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+FROM east_us_plot 
+INNER JOIN east_us_cond
+ON east_us_plot.statecd = east_us_cond.statecd AND east_us_plot.countycd = east_us_cond.countycd AND east_us_plot.plot = east_us_cond.plot
+GROUP BY east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+
+
+-- what states have plots with corresponding conditions?
+-- all 26 states
+WITH conditioned_plots AS (
+  SELECT east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+  FROM east_us_plot 
+  INNER JOIN east_us_cond
+  ON east_us_plot.statecd = east_us_cond.statecd AND east_us_plot.countycd = east_us_cond.countycd AND east_us_plot.plot = east_us_cond.plot
+  GROUP BY east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+)
+SELECT statecd FROM conditioned_plots GROUP BY statecd
+
+
+-- how many plots have values for TRTCD1?
+-- 122,109 plots (a bit less than half of them)
+SELECT east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+FROM east_us_plot 
+INNER JOIN east_us_cond
+ON east_us_plot.statecd = east_us_cond.statecd AND east_us_plot.countycd = east_us_cond.countycd AND east_us_plot.plot = east_us_cond.plot
+WHERE trtcd1 IS NOT NULL
+GROUP BY east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+
+
+-- what states have values for TRTCD1?
+-- all 26 of them!
+WITH trtcd_plots AS (
+  SELECT east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+  FROM east_us_plot 
+  INNER JOIN east_us_cond
+  ON east_us_plot.statecd = east_us_cond.statecd AND east_us_plot.countycd = east_us_cond.countycd AND east_us_plot.plot = east_us_cond.plot
+  WHERE trtcd1 IS NOT NULL
+  GROUP BY east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+)
+SELECT statecd FROM trtcd_plots GROUP BY statecd
+
+
+-- how many plots have values for trtcd1_p2a?
+-- None of them!
+SELECT east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+FROM east_us_plot 
+INNER JOIN east_us_cond
+ON east_us_plot.statecd = east_us_cond.statecd AND east_us_plot.countycd = east_us_cond.countycd AND east_us_plot.plot = east_us_cond.plot
+WHERE trtcd1_p2a IS NOT NULL
+GROUP BY east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+
+
+
+
+-- how many plots have values for HARVEST_TYPE1_SRS?
+-- 36,727 plots
+SELECT east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+FROM east_us_plot 
+INNER JOIN east_us_cond
+ON east_us_plot.statecd = east_us_cond.statecd AND east_us_plot.countycd = east_us_cond.countycd AND east_us_plot.plot = east_us_cond.plot
+WHERE HARVEST_TYPE1_SRS IS NOT NULL
+GROUP BY east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+
+
+-- what states have values for HARVEST_TYPE1_SRS?
+-- 6 states: NC, MS, KY, FL, VA, GA, SC, TN, AL
+WITH harvest_plots AS (
+  SELECT east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+  FROM east_us_plot 
+  INNER JOIN east_us_cond
+  ON east_us_plot.statecd = east_us_cond.statecd AND east_us_plot.countycd = east_us_cond.countycd AND east_us_plot.plot = east_us_cond.plot
+  WHERE HARVEST_TYPE1_SRS IS NOT NULL
+  GROUP BY east_us_plot.statecd, east_us_plot.countycd, east_us_plot.plot 
+)
+SELECT state_name 
+FROM harvest_plots 
+JOIN east_us_counties
+ON harvest_plots.statecd = east_us_counties.statecd
+GROUP BY state_name
+
+

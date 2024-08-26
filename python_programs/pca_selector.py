@@ -15,7 +15,7 @@ load_dotenv()
 save_to = f'C:/Users/{os.getenv('MS_USER_NAME')}/Pictures/optimized_pcas/automatic_saves'
 
 # SET WHETHER TO SIZE THE POINTS BY BASAL AREA HERE:
-size_points = True
+size_points = False
 
 for i in range(3, 8):
 # for i in range(5, 6):
