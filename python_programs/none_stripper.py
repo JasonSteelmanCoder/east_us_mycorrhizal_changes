@@ -4,10 +4,10 @@ import csv
 
 load_dotenv()
 
-with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_percents_and_ratios_by_plot.csv', 'r') as file:
+with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_am_dominance.csv', 'r') as file:
     reader = csv.reader(file)
 
-    with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/cleaned_east_us_percents_and_ratios.csv', 'w') as output:
+    with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/cleaned_east_us_am_dominance.csv', 'w') as output:
 
         for row in reader:
             write_line = ''
