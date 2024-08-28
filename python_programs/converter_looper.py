@@ -12,7 +12,7 @@ import os
 load_dotenv()
 
 # this is the path to the folder that holds all of your state tables in CSV format
-folder = f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/eastern_us_data/COND_BY_STATE'
+folder = f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/eastern_us_data/SUBP_COND_BY_STATE'
 
 # get the paths to all the state PLOT tables
 file_paths = glob.glob(os.path.join(folder, '*'))

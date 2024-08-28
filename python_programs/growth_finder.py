@@ -37,20 +37,13 @@ rows = cursor.fetchall()
 cursor.execute(f"""
 
     SELECT east_us_cond.invyr, trtcd1, trtcd2, trtcd3 
-    FROM east_us_plot 
-    JOIN east_us_cond
-    ON 
-        east_us_plot.statecd = east_us_cond.statecd
-        AND east_us_plot.unitcd = east_us_cond.unitcd
-        AND east_us_plot.countycd = east_us_cond.countycd
-        AND east_us_plot.plot = east_us_cond.plot
-        AND east_us_plot.invyr = east_us_cond.invyr
+    FROM east_us_cond 
     WHERE 
-        east_us_plot.statecd = {rows[0][0]}
-        AND east_us_plot.unitcd = {rows[0][1]}
-        AND east_us_plot.countycd = {rows[0][2]}    
-        AND east_us_plot.plot = {rows[0][3]}::text
-    ORDER BY east_us_plot.invyr
+        east_us_cond.statecd = {rows[0][0]}
+        AND east_us_cond.unitcd = {rows[0][1]}
+        AND east_us_cond.countycd = {rows[0][2]}    
+        AND east_us_cond.plot = {rows[0][3]}::text
+    ORDER BY east_us_cond.invyr
 
 """)
 

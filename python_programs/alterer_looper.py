@@ -8,9 +8,9 @@ import os
 
 load_dotenv()
 
-column = 'NBR_LIVE_STEMS'            # the column to alter
+column = 'modified_date'            # the column to alter
 data_type = 'text'                  # the datatype to change the column to
-folder = f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/eastern_us_data/COND_BY_STATE'       # the folder that has all of your state TREE tables, or state PLOT tables
+folder = f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/eastern_us_data/SUBP_COND_BY_STATE'       # the folder that has all of your state TREE tables, or state PLOT tables
 
 # get the filepaths for all of the state_tree tables (We need them to know what tables in the database to query.)
 file_paths = glob.glob(os.path.join(folder, '*'))
