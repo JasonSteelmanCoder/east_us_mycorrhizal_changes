@@ -6,12 +6,10 @@
 
 # import libraries for connecting to database and getting details from .env file
 import psycopg2
+import pandas as pd
 from dotenv import load_dotenv
 import os
 load_dotenv()
-
-# start building the output by inserting the column titles of the output csv
-output_contents = "statecd,unitcd,countycd,tot_bas_t1,ambasar_t1,embasar_t1,am_dom_t1,tot_bas_t2,ambasar_t2,embasar_t2,am_dom_t2,dif_am_dom\n"
 
 # connect to the database using details from the .env file
 connection = psycopg2.connect(
@@ -34,6 +32,8 @@ cursor.execute(f"""
 
 counties = cursor.fetchall()
 
+counties_data = []
+
 count = 0
 
 for county_row in counties:
@@ -45,86 +45,141 @@ for county_row in counties:
     count += 1
     print(f'Processing {statecd}  {unitcd}  {countycd}. Count: {count}')
 
-    # check every tree in a county for AM/EM association, and sum all AM basal area and EM basal area
-    # find AM dominance by county by dividing the AM area by the total AM and EM area
-    # trees that are both AM and EM have half of their basal area counted as AM and the other half as AM
-    # do this process once for T1 and again for T2
-    # finally, select all of the values that should go into the output csv
+    # 
     cursor.execute(f"""
-        
-        -- get the AM dom measurement for each plot in the county at T1
+
         WITH plots AS (
-            WITH trees AS (
-                WITH min_year_of_plot AS (
-                    -- find the earliest year of observation for each plot
-                    SELECT MIN(invyr), east_us_plot.statecd, east_us_plot.unitcd, east_us_plot.countycd, east_us_plot.plot
-                    FROM east_us_plot
-                    WHERE east_us_plot.invyr > 1979 AND east_us_plot.invyr < 1999
-                    GROUP BY east_us_plot.statecd, east_us_plot.unitcd, east_us_plot.countycd, east_us_plot.plot
-                    ORDER BY east_us_plot.statecd, east_us_plot.unitcd, east_us_plot.countycd, east_us_plot.plot, min
-                )
-                -- grab all of the trees in the county that are part of a first observation
-                SELECT east_us_tree.invyr, east_us_tree.statecd, east_us_tree.unitcd, east_us_tree.countycd, east_us_tree.plot, east_us_tree.subp, tree, round(east_us_tree.dia::decimal * 2.54, 1) as dia_cm, round(((PI() * (east_us_tree.dia::decimal * 2.54 / 2) ^ 2) / 10000)::decimal, 3) as basal_area, east_us_tree.spcd, ref_species.association
-                FROM east_us_tree 
-                LEFT JOIN ref_species
-                ON east_us_tree.spcd = ref_species.spcd
-                LEFT JOIN east_us_cond
-                ON east_us_tree.statecd = east_us_cond.statecd AND east_us_tree.unitcd = east_us_cond.unitcd AND east_us_tree.countycd = east_us_cond.countycd AND CAST(east_us_tree.plot AS text) = east_us_cond.plot AND east_us_tree.invyr = east_us_cond.invyr AND east_us_tree.condid = east_us_cond.condid
-                JOIN min_year_of_plot
-                ON east_us_tree.invyr = min_year_of_plot.min AND east_us_tree.statecd = min_year_of_plot.statecd AND east_us_tree.unitcd = min_year_of_plot.unitcd AND east_us_tree.countycd = min_year_of_plot.countycd AND east_us_tree.plot::text = min_year_of_plot.plot::text 
-                WHERE 
+          WITH observations_of_plots AS (
+            WITH obs_of_trees_in_county AS (
+              -- grab all observations of trees in the county
+              SELECT east_us_tree.invyr, east_us_tree.statecd, east_us_tree.unitcd, east_us_tree.countycd, east_us_tree.plot, east_us_tree.subp, tree, round(east_us_tree.dia::decimal * 2.54, 1) as dia_cm, round(((PI() * (east_us_tree.dia::decimal * 2.54 / 2) ^ 2) / 10000)::decimal, 5) as basal_area, east_us_tree.spcd, ref_species.association
+              FROM east_us_tree 
+              LEFT JOIN ref_species
+              ON east_us_tree.spcd = ref_species.spcd
+              LEFT JOIN east_us_cond
+              ON east_us_tree.statecd = east_us_cond.statecd AND east_us_tree.unitcd = east_us_cond.unitcd AND east_us_tree.countycd = east_us_cond.countycd AND CAST(east_us_tree.plot AS text) = east_us_cond.plot AND east_us_tree.invyr = east_us_cond.invyr AND east_us_tree.condid = east_us_cond.condid
+              WHERE 
 
-                east_us_tree.invyr > 1979 AND east_us_tree.invyr < 1999 AND										-- at T1
+              east_us_tree.invyr > 1979 AND east_us_tree.invyr < 1999 AND										-- at T1
 
-                east_us_tree.statecd = {statecd} AND  
-                east_us_tree.unitcd = {unitcd} AND
-                east_us_tree.countycd = {countycd} AND 
+              east_us_tree.statecd = {statecd} AND  
+              east_us_tree.unitcd = {unitcd} AND
+              east_us_tree.countycd = {countycd} AND 
 
-                (east_us_cond.industrialcd_fiadb IS NULL OR east_us_cond.industrialcd_fiadb = 0) AND	-- exclude timberland
-                east_us_tree.statuscd = 1			-- only count live trees
+              (east_us_cond.industrialcd_fiadb IS NULL OR east_us_cond.industrialcd_fiadb = 0) AND	-- exclude timberland
+              east_us_tree.statuscd = 1			-- only count live trees
 
-                ORDER BY statecd, unitcd, countycd, plot, subp, tree
+              ORDER BY statecd, unitcd, countycd, plot, subp, tree
             )
-            -- grab plots and their associated AM and EM basal_areas
+            -- grab each observation of a plot, aggregating tree measurements from that observation
             SELECT 
-                statecd, 
-                unitcd, 
-                countycd, 
-                plot, 
-                SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END) AS am_basal_area, 
-                SUM(CASE WHEN association = 'EM' THEN basal_area ELSE 0 END) AS em_basal_area, 
-                SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END)::DOUBLE PRECISION / (SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END) + SUM(CASE WHEN association != 'AM' THEN basal_area ELSE 0 END))::DOUBLE PRECISION AS am_dom
-            FROM trees
-            GROUP BY statecd, unitcd, countycd, plot
+              invyr, 
+              statecd, 
+              unitcd, 
+              countycd, 
+              plot, 
+              SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END) AS am_bas_area_t1,
+              SUM(CASE WHEN association = 'EM' THEN basal_area ELSE 0 END) AS em_bas_area_t1,
+              SUM(basal_area) AS total_bas_area_t1,
+              SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END)::double precision / SUM(basal_area)::double precision AS am_dom_t1
+            FROM obs_of_trees_in_county
+            GROUP BY invyr, statecd, unitcd, countycd, plot
+            ORDER BY statecd, unitcd, countycd, plot
+          )
+          -- grab each plot, averaging am_dom's where there are multiple years
+          SELECT statecd, unitcd, countycd, plot, AVG(am_dom_t1) AS am_dom_t1
+          FROM observations_of_plots
+          GROUP BY statecd, unitcd, countycd, plot
+          ORDER BY statecd, unitcd, countycd, plot
         )
-        -- grab the county's average am dom, over all of its plots
-        SELECT statecd, unitcd, countycd, AVG(am_dom) AS am_dom_t1
+        -- grab the county, averaging the am_dom of the plots in it
+        SELECT 
+          statecd, 
+          unitcd, 
+          countycd, 
+          AVG(am_dom_t1) AS am_dom_t1,
+          COALESCE(stddev(am_dom_t1)::double precision, 0) / sqrt(count(am_dom_t1))::double precision AS standard_error
         FROM plots
         GROUP BY statecd, unitcd, countycd
-        ORDER BY statecd, unitcd, countycd
 
     """)
 
+    t1_county_stats = cursor.fetchall()
 
-    rows = cursor.fetchall()
+    # print(t1_county_stats[0])
 
-    row_length = len(rows[0])
+    cursor.execute(f"""
 
-    # write the query results to output_contents
-    for county_row in rows:            # (there is only one row per SQL query)
-        output_contents += f'{statecd},{unitcd},{countycd},'
-        for i in range(row_length - 1):
-            if county_row[i] == 'None':
-                output_contents += ','
-            else:
-                output_contents += f'{county_row[i]},'
-        output_contents += f'{county_row[-1]}\n'
+        WITH plots AS (
+          WITH observations_of_plots AS (
+            WITH obs_of_trees_in_county AS (
+              -- grab all observations of trees in the county
+              SELECT east_us_tree.invyr, east_us_tree.statecd, east_us_tree.unitcd, east_us_tree.countycd, east_us_tree.plot, east_us_tree.subp, tree, round(east_us_tree.dia::decimal * 2.54, 1) as dia_cm, round(((PI() * (east_us_tree.dia::decimal * 2.54 / 2) ^ 2) / 10000)::decimal, 5) as basal_area, east_us_tree.spcd, ref_species.association
+              FROM east_us_tree 
+              LEFT JOIN ref_species
+              ON east_us_tree.spcd = ref_species.spcd
+              LEFT JOIN east_us_cond
+              ON east_us_tree.statecd = east_us_cond.statecd AND east_us_tree.unitcd = east_us_cond.unitcd AND east_us_tree.countycd = east_us_cond.countycd AND CAST(east_us_tree.plot AS text) = east_us_cond.plot AND east_us_tree.invyr = east_us_cond.invyr AND east_us_tree.condid = east_us_cond.condid
+              WHERE 
 
-# once all county rows have been added to output_contents, write contents to a csv file
-# note that this implementation gets part of the path from a .env file
-# replace the path with the location where you want your csv file stored on your computer
-with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_am_dominance.csv", "w") as output_file:
-    output_file.write(output_contents)
+              east_us_tree.invyr > 2014 AND east_us_tree.invyr < 2023 AND										-- at T2
+
+              east_us_tree.statecd = {statecd} AND  
+              east_us_tree.unitcd = {unitcd} AND
+              east_us_tree.countycd = {countycd} AND 
+
+              (east_us_cond.industrialcd_fiadb IS NULL OR east_us_cond.industrialcd_fiadb = 0) AND	-- exclude timberland
+              east_us_tree.statuscd = 1			-- only count live trees
+
+              ORDER BY statecd, unitcd, countycd, plot, subp, tree
+            )
+            -- grab each observation of a plot, aggregating tree measurements from that observation
+            SELECT 
+              invyr, 
+              statecd, 
+              unitcd, 
+              countycd, 
+              plot, 
+              SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END) AS am_bas_area_t2,
+              SUM(CASE WHEN association = 'EM' THEN basal_area ELSE 0 END) AS em_bas_area_t2,
+              SUM(basal_area) AS total_bas_area_t2,
+              SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END)::double precision / SUM(basal_area)::double precision AS am_dom_t2
+            FROM obs_of_trees_in_county
+            GROUP BY invyr, statecd, unitcd, countycd, plot
+            ORDER BY statecd, unitcd, countycd, plot
+          )
+          -- grab each plot, averaging am_dom's where there are multiple years
+          SELECT statecd, unitcd, countycd, plot, AVG(am_dom_t2) AS am_dom_t2
+          FROM observations_of_plots
+          GROUP BY statecd, unitcd, countycd, plot
+          ORDER BY statecd, unitcd, countycd, plot
+        )
+        -- grab the county, averaging the am_dom of the plots in it
+        SELECT 
+          statecd, 
+          unitcd, 
+          countycd, 
+          AVG(am_dom_t2) AS am_dom_t2,
+          COALESCE(stddev(am_dom_t2)::double precision, 0) / sqrt(count(am_dom_t2))::double precision AS standard_error
+        FROM plots
+        GROUP BY statecd, unitcd, countycd
+
+    """)
+
+    t2_county_stats = cursor.fetchall()
+
+    # print(t2_county_stats[0])
+
+    if len(t1_county_stats) > 0 and len(t2_county_stats) > 0:       # if there are no stats for t1 or no stats for t2, then nothing is added to the output for that county
+        single_county_stats = []
+        single_county_stats.extend(t1_county_stats[0])
+        single_county_stats.extend([t2_county_stats[0][3], t2_county_stats[0][4]])
+        single_county_stats.append(t2_county_stats[0][3] - t1_county_stats[0][3])       # calculate dif_am_dom
+        # print(single_county_stats)
+        counties_data.append(single_county_stats)
+
+output_df = pd.DataFrame(counties_data, columns=["statecd", "unitcd", "countycd", "am_dom_t1", "std_err_t1", "am_dom_t2", "std_err_t2", "dif_am_dom"])
+output_df.to_csv(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_am_dominance.csv", index=False)
 
 # clean up
 cursor.close()
