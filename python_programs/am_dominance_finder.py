@@ -1,7 +1,6 @@
 """
 
 
-
 """
 
 # import libraries for connecting to database and getting details from .env file
@@ -170,7 +169,7 @@ for county_row in counties:
 
     # print(t2_county_stats[0])
 
-    if len(t1_county_stats) > 0 and len(t2_county_stats) > 0:       # if there are no stats for t1 or no stats for t2, then nothing is added to the output for that county
+    if len(t1_county_stats) > 0 and len(t2_county_stats) > 0:       # if there are no stats for t1 or no stats for t2, then the county is not added to the output.
         single_county_stats = []
         single_county_stats.extend(t1_county_stats[0])
         single_county_stats.extend([t2_county_stats[0][3], t2_county_stats[0][4]])
