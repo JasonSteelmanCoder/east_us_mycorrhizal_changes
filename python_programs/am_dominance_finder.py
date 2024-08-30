@@ -80,7 +80,7 @@ for county_row in counties:
               SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END) AS am_bas_area_t1,
               SUM(CASE WHEN association = 'EM' THEN basal_area ELSE 0 END) AS em_bas_area_t1,
               SUM(basal_area) AS total_bas_area_t1,
-              SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END)::double precision / SUM(basal_area)::double precision AS am_dom_t1
+              CASE WHEN (SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END) + SUM(CASE WHEN association = 'EM' THEN basal_area ELSE 0 END)) = 0 THEN 0 ELSE SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END)::double precision / (SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END) + SUM(CASE WHEN association = 'EM' THEN basal_area ELSE 0 END))::double precision END AS am_dom_t1
             FROM obs_of_trees_in_county
             GROUP BY invyr, statecd, unitcd, countycd, plot
             ORDER BY statecd, unitcd, countycd, plot
@@ -142,7 +142,7 @@ for county_row in counties:
               SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END) AS am_bas_area_t2,
               SUM(CASE WHEN association = 'EM' THEN basal_area ELSE 0 END) AS em_bas_area_t2,
               SUM(basal_area) AS total_bas_area_t2,
-              SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END)::double precision / SUM(basal_area)::double precision AS am_dom_t2
+              CASE WHEN (SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END) + SUM(CASE WHEN association = 'EM' THEN basal_area ELSE 0 END)) = 0 THEN 0 ELSE SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END)::double precision / (SUM(CASE WHEN association = 'AM' THEN basal_area ELSE 0 END) + SUM(CASE WHEN association = 'EM' THEN basal_area ELSE 0 END))::double precision END AS am_dom_t2
             FROM obs_of_trees_in_county
             GROUP BY invyr, statecd, unitcd, countycd, plot
             ORDER BY statecd, unitcd, countycd, plot
@@ -178,7 +178,7 @@ for county_row in counties:
         counties_data.append(single_county_stats)
 
 output_df = pd.DataFrame(counties_data, columns=["statecd", "unitcd", "countycd", "am_dom_t1", "std_err_t1", "am_dom_t2", "std_err_t2", "dif_am_dom"])
-output_df.to_csv(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_am_dominance.csv", index=False)
+output_df.to_csv(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/east_us_am_dominance_excluding.csv", index=False)
 
 # clean up
 cursor.close()
