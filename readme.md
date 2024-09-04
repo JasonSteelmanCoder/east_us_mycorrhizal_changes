@@ -66,7 +66,7 @@ classifications are included in the 'source' column of that table.
     8 Use assign_associations_to_species_nums_in_REF_SPECIES.sql to add an associations column to the 
     REF_SPECIES table.
     
-    9. Use loop_ratio_finder.py to find the basal area of AM and basal area of EM trees for each county 
+    9. Use am_dominance_finder.py to find the basal area of AM and basal area of EM trees for each county 
     and compare them.
     
     10. Download a counties shapefile from the Census Bureau website and remove counties east of the 
