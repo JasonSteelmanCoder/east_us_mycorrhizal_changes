@@ -70,6 +70,8 @@ for county_row in counties:
             WHERE 
                 east_us_tree.statecd = {statecd} 
                 AND east_us_tree.countycd = {countycd}
+                AND east_us_tree.invyr > 2014 AND east_us_tree.invyr < 2023				-- at T2
+                AND east_us_tree.dia IS NOT NULL
         )
         SELECT 
             trees.statecd, 
@@ -79,7 +81,7 @@ for county_row in counties:
             -- note that pct_adapted is the percent of trees belonging to the 75 selected species that are adapted
             ROUND(COALESCE(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END), 0) / (COALESCE(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END), 0) + COALESCE(SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END), 0)) * 100, 1) AS pct_adapted,
             COALESCE(SUM(CASE WHEN fire_classification IS NULL THEN basal_area END), 0) AS excluded_bas_area,  
-            ROUND((SUM(CASE WHEN fire_classification IS NULL THEN basal_area END) / (SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END) + SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END) + SUM(CASE WHEN fire_classification IS NULL THEN basal_area END))) * 100, 2) AS pct_area_excluded,
+            COALESCE(ROUND((SUM(CASE WHEN fire_classification IS NULL THEN basal_area END) / (SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END) + SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END) + SUM(CASE WHEN fire_classification IS NULL THEN basal_area END))) * 100, 2), 0) AS pct_area_excluded,
             ROUND(COALESCE(SUM(CASE WHEN association = 'AM' AND fire_classification IS NOT NULL THEN basal_area END), 0) + 0.5 * COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0), 2) AS am_area,
             ROUND(COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) + 0.5 * COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0), 2) AS em_area,
             -- note that pct_em is the percent of trees belonging to the 75 selected species that are Ectomycorrhizal
@@ -97,16 +99,18 @@ for county_row in counties:
 
     rows = cursor.fetchall()
 
-    row_length = len(rows[0])
+    if len(rows) > 0:
 
-    # write the query results to output_contents
-    for county_row in rows:            # (note that there is only one row per SQL query)
-        for i in range(row_length - 1):
-            if county_row[i] == 'None':
-                output_contents += ','
-            else:
-                output_contents += f'{county_row[i]},'
-        output_contents += f'{county_row[-1]}\n'
+        row_length = len(rows[0])
+
+        # write the query results to output_contents
+        for county_row in rows:            # (note that there is only one row per SQL query)
+            for i in range(row_length - 1):
+                if county_row[i] == 'None':
+                    output_contents += ','
+                else:
+                    output_contents += f'{county_row[i]},'
+            output_contents += f'{county_row[-1]}\n'
 
 # once all county rows have been added to output_contents, write contents to a csv file
 # note that this implementation gets part of the path from a .env file

@@ -1,17 +1,11 @@
-
-ROUND(((COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
-+ 
-(0.5 * COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0))) 
+ROUND((SUM(CASE WHEN fire_classification IS NULL THEN basal_area END) 
 
 / 
 
-(COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
-+ 
-COALESCE(SUM(CASE WHEN association = 'AM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
-+ 
-COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0))) 
+(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END) 
++ SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END) 
++ SUM(CASE WHEN fire_classification IS NULL THEN basal_area END))) 
 
-* 100, 1) 
+* 100, 2) 
 
-AS pct_em,
-
+AS pct_area_excluded,
