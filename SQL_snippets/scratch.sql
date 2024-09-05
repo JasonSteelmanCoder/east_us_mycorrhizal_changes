@@ -1,10 +1,17 @@
 
+ROUND(((COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
++ 
+(0.5 * COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0))) 
 
-ROUND(
-    (
-        SUM(totaln)
-        / (SUM(dayssample * criteria1::DECIMAL / 100)) 
-        * 365
-    )::DECIMAL
-    , 3
-) AS n_kg_ha_yr
+/ 
+
+(COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
++ 
+COALESCE(SUM(CASE WHEN association = 'AM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
++ 
+COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0))) 
+
+* 100, 1) 
+
+AS pct_em,
+

@@ -54,16 +54,17 @@ for county_row in counties:
 
     cursor.execute(f"""
         WITH trees AS (
+            -- grab all trees in the county (including those with null fire classifications)
             SELECT 
                 east_us_tree.statecd AS statecd,
                 east_us_tree.countycd AS countycd,
                 east_us_tree.spcd AS spcd,
                 fire_classification,
-                ROUND(((PI() * (east_us_tree.dia::DECIMAL * 2.54 / 2) ^ 2) / 10000)::DECIMAL, 2) AS basal_area,
+                ROUND(((PI() * (east_us_tree.dia::DECIMAL * 2.54 / 2) ^ 2) / 10000)::DECIMAL, 4) AS basal_area,
                 ref_species.association
             FROM east_us_tree
             LEFT JOIN fire_adaptation
-                ON east_us_tree.spcd = fire_adaptation.spcd
+            ON east_us_tree.spcd = fire_adaptation.spcd
             LEFT JOIN ref_species
             ON ref_species.spcd = east_us_tree.spcd
             WHERE 
@@ -72,7 +73,7 @@ for county_row in counties:
         )
         SELECT 
             trees.statecd, 
-        trees.countycd,
+            trees.countycd,
             COALESCE(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END), 0) AS adapted_area,
             COALESCE(SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END), 0) AS intolerant_area,
             -- note that pct_adapted is the percent of trees belonging to the 75 selected species that are adapted
