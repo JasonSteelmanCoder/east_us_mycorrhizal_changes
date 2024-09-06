@@ -6,6 +6,10 @@ through a T2 of 2015-2022. It also includes the necessary software to build comp
 potentially correlated phenomena. These include fire frequency, atmospheric nitrogen deposition, mean annual 
 temperature, mean annual precipitation, and ecoregion.
 
+To analyze the relationship between ectomycorrhizal dominance and fire adaptation, I provide programs for collecting that data and plotting it by eco-region.
+
+In addition to maps and plots, I have also included programs for analyzing the fire characteristics of common species of trees and the relationships between those characteristics, fire adaptation, and mycorrhizal associations. In particular, you will find programs for principal component analysis of fire characteristics, along with decision tree classifiers trained to recognize mycorrhizal associations and fire adaptation based on the fire characteristics of a species.
+
 ## Change in AM / EM Dominance Map:
 
 This map uses the Forest Inventory and Analysis (FIA) database to track changes in the dominance of arbuscular 
@@ -320,3 +324,53 @@ The data used is from RDS-2013-0009.6_Data_Format4_SQLITE.zip, downloaded at htt
     4. Run compare_pct_em_pct_adapted.py to build visualizations from the numbers
     
     5. Run compare_em_vs_adapted_by_region.py to get visualizations for each ecological region
+
+## Steps to perform a principal component analysis (PCA) on fire characteristics of common tree species:
+
+    1. Use prepare_data_for_pca_analysis.sql
+    
+    2. Save the results to a csv (called prelim_pca_data)
+    
+    3. Use find_percent_of_basal_area_for_each_species.sql
+    
+    4. Save the results to a csv (called common_trees_...)
+    
+    5. Use percent_basal_area_inserter.py to add percents of basal areas to merge the csv's
+    
+    6. Use pca_of_fire_characteristics.py to make the PCA based on the resulting csv
+    
+    7. Exclude rows with very low basal areas
+
+## Steps to train a decision tree classifier on fire characteristics to recognize fire classification of a species:
+
+    1. Run collect_data_for_decision_trees.sql 
+    
+    2. Save the results as a csv called input_to_decision_trees.csv
+    
+    3. Run collect_species_missing_only_1_value.sql
+    
+    4. Save the results as a csv called input_to_accuracy_test.csv
+    
+    5. In decision_tree_for_fire_classification.py, select the tasks you want by making sure that they are not commented out. The tasks include:
+
+        - predict a new species
+        - check the permutation importance of each variable
+        - check the accuracy of predictions using k-fold and leave-one-out methods
+        - check the accuracy of predictions against species with all but one of the relevant values 
+
+## Steps to train a decision tree classifier on fire characteristics to recognize mycorrhizal association of a species:
+
+    1. Run collect_data_for_decision_trees.sql 
+    
+    2. Save the results as a csv called input_to_decision_trees.csv
+    
+    3. Run collect_species_missing_only_1_value.sql
+    
+    4. Save the results as a csv called input_to_accuracy_test.csv
+    
+    5. In decision_tree_for_myco.py, select the tasks you want by making sure that they are not commented out. The tasks include:
+
+        - predict a new species
+        - check the permutation importance of each variable
+        - check the accuracy of predictions using k-fold and leave-one-out methods
+        - check the accuracy of predictions against species with all but one of the relevant values 
