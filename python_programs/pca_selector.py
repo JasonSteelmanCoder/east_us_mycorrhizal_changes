@@ -1,3 +1,16 @@
+"""
+
+This program uses explained variance as a metric for finding the most meaningful 
+combination of the seven known fire characteristics of our tree species.
+
+First, it pulls the characteristics data from the database. Then, it calculates all of the 
+possible combinations of the variables for each number of variables from 3 to 7. It then 
+runs a principal component analysis for each of those combinations. Finally, for each 
+number of variables from 3-7, it plots the PCA with the highest explained variance.
+
+"""
+
+
 import psycopg2
 from itertools import combinations
 import os
