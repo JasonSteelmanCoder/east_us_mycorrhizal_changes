@@ -1,3 +1,12 @@
+"""
+This program trains a decision tree classifier to predict the mycorrhizal association of 
+a species, based on the seven known fire characteristics of that tree. It can then run a 
+number of tests to check the model's accuracy. By checking the permutation importance of 
+each input column, it helps us decide which combination of variables might be the most 
+predictive of mycorrhizal association.
+
+"""
+
 import pandas as pd
 import os
 from dotenv import load_dotenv
@@ -7,6 +16,7 @@ from sklearn.inspection import permutation_importance
 from sklearn.model_selection import LeaveOneOut, KFold, cross_val_score
 from statistics import mean
 
+# SET UP
 load_dotenv()
 
 input_file = pd.read_csv(f'C:/Users/{os.getenv('MS_USER_NAME')}/Desktop/input_to_decision_trees.csv')
@@ -21,6 +31,7 @@ for j in range(7):
     for value in features_df.iloc[:, j]:
         flattened_features.append(value)
 
+# TRAIN A MODEL
 le = LabelEncoder()
 le.fit(target)
 
