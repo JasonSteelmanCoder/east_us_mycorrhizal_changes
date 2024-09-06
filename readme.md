@@ -308,3 +308,15 @@ The data used is from RDS-2013-0009.6_Data_Format4_SQLITE.zip, downloaded at htt
         ```  
     
     8. Color your map based on the new column. The units will be reports/km^2/year
+
+## Steps to plot fire-adaptation vs ECM dominance by eco-region:
+
+    1. Use find_most_common_species_by_basal_area.sql to find the 75 most abundant species by basal area
+    
+    2. Make the most common species by basal area into a database table called fire_adaptation
+    
+    3. Run adaptation_ratio_finder.py to find the relevant values and save them to a file called adaptation_by_county.csv
+    
+    4. Run compare_pct_em_pct_adapted.py to build visualizations from the numbers
+    
+    5. Run compare_em_vs_adapted_by_region.py to get visualizations for each ecological region
