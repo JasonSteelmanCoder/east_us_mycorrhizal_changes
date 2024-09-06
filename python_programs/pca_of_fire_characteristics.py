@@ -1,3 +1,9 @@
+"""
+This program performs a principal component analysis (PCA) on the data saved in 
+pca_input_7_30_2024.csv and plots the results. 
+
+"""
+
 # uncomment lines 18, 27-28 to add species labels to the plot
 
 import numpy as np
