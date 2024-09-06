@@ -1,5 +1,15 @@
 """
 
+This program connects to the PostgreSQL database, pulls down data from the east_us_tree, 
+east_us_cond, east_us_plot, and ref_species tables, then processes the data to find AM dominance at T1 
+and T2, as well as the difference between them. It outputs its findings to a csv file.
+
+For this program to work, you need to have the tree, plot, and cond tables for each state, and 
+the ref_species table downloaded from the FIA database. Those then need to be put into a 
+local postgres database. The state-by-state cond and tree tables will need to be merged 
+into east_us_tree, east_us_plot, and east_us_cond tables respectively.
+
+This program accesses details for connecting to the database through a .env file. 
 
 """
 
