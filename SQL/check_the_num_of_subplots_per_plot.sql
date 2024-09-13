@@ -21,7 +21,11 @@ ORDER BY num_subplots
 
 
 
-
-
 -- EXAMINE AN INDIVIDUAL PLOT
 SELECT * FROM east_us_plot WHERE statecd = 13 AND unitcd = 1 AND countycd = 39 AND plot = '90025'
+
+-- EXAMINE AN INDIVIDUAL PLOT
+SELECT statecd, unitcd, countycd, plot, subp 
+FROM east_us_tree 
+WHERE statecd = 13 AND unitcd = 1 AND countycd = 39 AND plot = '90025'
+GROUP BY statecd, unitcd, countycd, plot, subp
