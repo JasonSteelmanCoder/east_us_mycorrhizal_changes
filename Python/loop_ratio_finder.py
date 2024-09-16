@@ -38,7 +38,6 @@ cursor = connection.cursor()
 cursor.execute(f"""
     SELECT statecd, unitcd, countycd 
     FROM east_us_plot 
-    WHERE plot_status_cd = 1            -- exclude non-forest plots
     GROUP BY statecd, unitcd, countycd
 """)
 
