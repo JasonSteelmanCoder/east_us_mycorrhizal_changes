@@ -52,48 +52,244 @@ for county_row in counties:
     print(f'Processing {statecd}  {unitcd}  {countycd}. Count: {count}')
 
     cursor.execute(f"""
-        WITH trees AS (
-            -- grab all trees in the county (including those with null fire classifications)
+
+        WITH plots AS (
+            WITH obs_of_plots AS (
+                WITH obs_of_trees AS (
+                    -- grab all observations of trees in the county (including those with null fire classifications, excluding those with null diameters)
+                    SELECT 
+                        east_us_tree.statecd AS statecd,
+                        east_us_tree.unitcd AS unitcd,
+                        east_us_tree.countycd AS countycd,
+                        east_us_tree.plot AS plot,
+                        east_us_tree.invyr AS invyr,
+                        east_us_tree.spcd AS spcd,
+                        fire_classification,
+                        ROUND(((PI() * (east_us_tree.dia::DECIMAL * 2.54 / 2) ^ 2) / 10000)::DECIMAL, 4) AS basal_area,
+                        ref_species.association
+                    FROM east_us_tree
+                    LEFT JOIN fire_adaptation								-- include species with null fire classifications (to allow calculation of excluded basal area)
+                    ON east_us_tree.spcd = fire_adaptation.spcd
+                    JOIN ref_species
+                    ON ref_species.spcd = east_us_tree.spcd
+                    WHERE 
+                        east_us_tree.statecd = {statecd} 
+                        AND east_us_tree.unitcd = {unitcd}
+                        AND east_us_tree.countycd = {countycd}
+                        AND east_us_tree.invyr > 2014 AND east_us_tree.invyr < 2023				-- at T2
+                        AND east_us_tree.dia IS NOT NULL											-- trees must have diameters
+                )
+                -- grab all observations of plots, summing AM and EM basal areas
+                SELECT 
+                    oot.statecd,
+                    oot.unitcd,
+                    oot.countycd,
+                    oot.plot,
+                    oot.invyr,
+                    COALESCE(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END), 0) AS adapted_area,
+                    COALESCE(SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END), 0) AS intolerant_area,
+                    -- note that pct_adapted is the percent of trees belonging to the 75 selected species that are adapted
+                    CASE
+                        WHEN
+                            COALESCE(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END), 0) 
+                            + 
+                            COALESCE(SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END), 0)
+                            = 
+                            0
+                        THEN 
+                            NULL
+                        ELSE
+                            ROUND(
+                                COALESCE(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END), 0) 
+                                / 
+                                (
+                                    COALESCE(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END), 0) 
+                                    + 
+                                    COALESCE(SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END), 0)
+                                ) * 100
+                                , 1
+                            )
+                    END 
+                    AS pct_adapted,
+                    COALESCE(SUM(CASE WHEN fire_classification IS NULL THEN basal_area END), 0) AS excluded_bas_area,  -- trees that are not part of the 75 species
+                    COALESCE(
+                        ROUND(
+                            (
+                                SUM(CASE WHEN fire_classification IS NULL THEN basal_area END) 
+                                / 
+                                (
+                                    SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END) 
+                                    + 
+                                    SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END) 
+                                    + 
+                                    SUM(CASE WHEN fire_classification IS NULL THEN basal_area END)
+                                )
+                            ) * 100
+                            , 2
+                        )
+                        , 0
+                    ) AS pct_area_excluded,
+                    ROUND(
+                        COALESCE(SUM(CASE WHEN association = 'AM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
+                        + 
+                        0.5 * COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0)
+                        , 4
+                    ) AS am_area,
+                    ROUND(
+                        COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
+                        + 
+                        0.5 * COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0)
+                        , 4
+                    ) AS em_area,
+                    -- note that pct_em is the percent of trees belonging to the 75 selected species that are Ectomycorrhizal
+                    CASE 
+						WHEN 
+							COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
+							+
+							COALESCE(SUM(CASE WHEN association = 'AM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
+							+ 
+							COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0)
+							= 
+							0
+						THEN NULL
+						ELSE
+							ROUND(
+		                        (
+		                            (
+		                                COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
+		                                +
+		                                (0.5 * COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0))
+		                            ) 
+		                            / 
+		                            (
+		                                COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
+		                                +
+		                                COALESCE(SUM(CASE WHEN association = 'AM' AND fire_classification IS NOT NULL THEN basal_area END), 0) 
+		                                + 
+		                                COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0)
+		                            )
+								) * 100
+								, 1
+							)
+					END AS pct_em,
+                    -- not_counted_area is the basal area of trees that are not part of the 75 species, plus ericoid sourwood trees
+                    COALESCE(
+                        SUM(
+                            CASE 
+                                WHEN fire_classification IS NULL 
+                                    OR (association != 'AM' AND association != 'EM' AND association != 'AM-EM') 
+                                THEN basal_area 
+                            END
+                        )
+                        , 0
+                    ) AS not_counted_area,
+                    -- pct_not_counted is the not_counted_area as a percent of the total basal area in the county, including all species, association types, and fire adaptation types
+                    ROUND(
+                        (
+                            COALESCE(
+                                SUM(
+                                    CASE 
+                                        WHEN fire_classification IS NULL 
+                                            OR (association != 'AM' AND association != 'EM' AND association != 'AM-EM') 
+                                        THEN basal_area 
+                                    END
+                                )
+                                , 0
+                            ) 
+                            / 
+                            (
+                                COALESCE(
+                                    SUM(
+                                        CASE 
+                                            WHEN fire_classification IS NULL 
+                                                OR (association != 'AM' AND association != 'EM' AND association != 'AM-EM') 
+                                            THEN basal_area 
+                                        END
+                                    )
+                                    , 0
+                                ) 
+                                + 
+                                COALESCE(SUM(CASE WHEN association = 'AM' AND fire_classification IS NOT NULL THEN basal_area END), 0)
+                                + 
+                                COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0)
+                                + 
+                                COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0)
+                            )
+                        ) * 100 
+                        , 2
+                    ) AS pct_not_counted,
+                    region_id
+                FROM obs_of_trees oot
+                JOIN east_us_region
+                ON east_us_region.statecd = oot.statecd AND east_us_region.countycd = oot.countycd
+                GROUP BY 
+                    oot.statecd,
+                    oot.unitcd,
+                    oot.countycd,
+                    oot.plot,
+                    oot.invyr,
+                    region_id
+                ORDER BY 
+                    oot.statecd,
+                    oot.unitcd,
+                    oot.countycd,
+                    oot.plot,
+                    oot.invyr
+            )
+            -- grab each plot, averaging the measurements from the plot's observations
             SELECT 
-                east_us_tree.statecd AS statecd,
-                east_us_tree.countycd AS countycd,
-                east_us_tree.spcd AS spcd,
-                fire_classification,
-                ROUND(((PI() * (east_us_tree.dia::DECIMAL * 2.54 / 2) ^ 2) / 10000)::DECIMAL, 4) AS basal_area,
-                ref_species.association
-            FROM east_us_tree
-            LEFT JOIN fire_adaptation
-            ON east_us_tree.spcd = fire_adaptation.spcd
-            LEFT JOIN ref_species
-            ON ref_species.spcd = east_us_tree.spcd
-            WHERE 
-                east_us_tree.statecd = {statecd} 
-                AND east_us_tree.countycd = {countycd}
-                AND east_us_tree.invyr > 2014 AND east_us_tree.invyr < 2023				-- at T2
-                AND east_us_tree.dia IS NOT NULL
+                oop.statecd,
+                oop.unitcd,
+                oop.countycd, 
+                oop.plot,
+                ROUND(AVG(oop.adapted_area), 4) AS adapted_area,
+                ROUND(AVG(oop.intolerant_area), 4) AS intolerant_area,
+                ROUND(AVG(oop.pct_adapted), 2) AS pct_adapted,
+                ROUND(AVG(oop.excluded_bas_area), 4) AS excluded_bas_area,
+                ROUND(AVG(oop.pct_area_excluded), 2) AS pct_area_excluded,
+                ROUND(AVG(oop.am_area), 4) AS am_area,
+                ROUND(AVG(oop.em_area), 4) AS em_area,
+                ROUND(AVG(oop.pct_em), 2) AS pct_em,
+                ROUND(AVG(oop.not_counted_area), 4) AS not_counted_area,
+                ROUND(AVG(oop.pct_not_counted), 2) AS pct_not_counted,
+                oop.region_id AS region
+            FROM obs_of_plots oop
+            GROUP BY 
+                oop.statecd,
+                oop.unitcd,
+                oop.countycd, 
+                oop.plot,
+                oop.region_id
+            ORDER BY 
+                oop.statecd,
+                oop.unitcd,
+                oop.countycd, 
+                oop.plot,
+                oop.region_id
         )
+        -- grab the county, averaging the measurements of each plot
         SELECT 
-            trees.statecd, 
-            trees.countycd,
-            COALESCE(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END), 0) AS adapted_area,
-            COALESCE(SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END), 0) AS intolerant_area,
-            -- note that pct_adapted is the percent of trees belonging to the 75 selected species that are adapted
-            ROUND(COALESCE(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END), 0) / (COALESCE(SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END), 0) + COALESCE(SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END), 0)) * 100, 1) AS pct_adapted,
-            COALESCE(SUM(CASE WHEN fire_classification IS NULL THEN basal_area END), 0) AS excluded_bas_area,  
-            COALESCE(ROUND((SUM(CASE WHEN fire_classification IS NULL THEN basal_area END) / (SUM(CASE WHEN fire_classification = 'adapted' THEN basal_area END) + SUM(CASE WHEN fire_classification = 'intolerant' THEN basal_area END) + SUM(CASE WHEN fire_classification IS NULL THEN basal_area END))) * 100, 2), 0) AS pct_area_excluded,
-            ROUND(COALESCE(SUM(CASE WHEN association = 'AM' AND fire_classification IS NOT NULL THEN basal_area END), 0) + 0.5 * COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0), 2) AS am_area,
-            ROUND(COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) + 0.5 * COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0), 2) AS em_area,
-            -- note that pct_em is the percent of trees belonging to the 75 selected species that are Ectomycorrhizal
-            ROUND(((COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) + (0.5 * COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0))) / (COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0) + COALESCE(SUM(CASE WHEN association = 'AM' AND fire_classification IS NOT NULL THEN basal_area END), 0) + COALESCE(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 0))) * 100, 1) AS pct_em,
-            -- not_counted_area is the basal area of trees that are not part of the 75 species, plus ericoid sourwood trees
-            COALESCE(SUM(CASE WHEN fire_classification IS NULL OR (association != 'AM' AND association != 'EM' AND association != 'AM-EM') THEN basal_area END), 0) AS not_counted_area,
-            -- pct_not_counted is the not_counted_area as a percent of the total basal area in the county, including all species, association types, and fire adaptation types
-            ROUND((COALESCE(SUM(CASE WHEN fire_classification IS NULL OR (association != 'AM' AND association != 'EM' AND association != 'AM-EM') THEN basal_area END), 0) / (COALESCE(SUM(CASE WHEN fire_classification IS NULL OR (association != 'AM' AND association != 'EM' AND association != 'AM-EM') THEN basal_area END), 0) + ROUND(COALESCE(SUM(CASE WHEN association = 'AM' AND fire_classification IS NOT NULL THEN basal_area END), 0), 2) + ROUND(COALESCE(SUM(CASE WHEN association = 'EM' AND fire_classification IS NOT NULL THEN basal_area END), 0), 2) + COALESCE(ROUND(SUM(CASE WHEN association = 'AM-EM' AND fire_classification IS NOT NULL THEN basal_area END), 2), 0))) * 100 , 2) AS pct_not_counted,
-            east_us_region.region_id AS region
-        FROM trees
-        LEFT JOIN east_us_region
-        ON east_us_region.statecd = trees.statecd AND east_us_region.countycd = trees.countycd  
-        GROUP BY trees.statecd, trees.countycd, east_us_region.region_id;
+            statecd,
+            unitcd, 
+            countycd,
+            ROUND(AVG(adapted_area), 4) adapted_area,
+            ROUND(AVG(intolerant_area), 4) intolerant_area,
+            ROUND(AVG(pct_adapted), 2) pct_adapted,
+            ROUND(AVG(excluded_bas_area), 4) excluded_bas_area,
+            ROUND(AVG(pct_area_excluded), 2) pct_area_excluded,
+            ROUND(AVG(am_area), 4) am_area,
+            ROUND(AVG(em_area), 4) em_area,
+            ROUND(AVG(pct_em), 2) pct_em,
+            ROUND(AVG(not_counted_area), 4) not_counted_area,
+            ROUND(AVG(pct_not_counted), 2) pct_not_counted,
+            region
+        FROM plots
+        GROUP BY 
+            statecd,
+            unitcd,
+            countycd,
+            region
+
     """)
 
     rows = cursor.fetchall()
