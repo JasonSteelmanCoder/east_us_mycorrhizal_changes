@@ -18,7 +18,7 @@ import os
 load_dotenv()
 
 # start building the output by inserting the column titles of the output csv
-output_contents = "statecd,countycd,adapted_area,intolerant_area,pct_adapted,excluded_bas_area,pct_area_excluded,am_area,em_area,pct_em,not_counted_area,pct_not_counted,region\n"
+output_contents = "statecd,unitcd,countycd,adapted_area,intolerant_area,pct_adapted,excluded_bas_area,pct_area_excluded,am_area,em_area,pct_em,not_counted_area,pct_not_counted,region\n"
 
 # connect to the database using details from the .env file
 connection = psycopg2.connect(
