@@ -35,9 +35,9 @@ for region in regions:
             if i == 0:
                 i += 1
             else:
-                if row[12] == current_region:
-                    pcts_adapted.append(float(row[4]))
-                    pcts_em.append(float(row[9]))
+                if row[13] == current_region:
+                    pcts_adapted.append(float(row[5]))
+                    pcts_em.append(float(row[10]))
 
     pcts_adapted_array = np.array(pcts_adapted[1:])
     pcts_em_array = np.array((pcts_em[1:]))
