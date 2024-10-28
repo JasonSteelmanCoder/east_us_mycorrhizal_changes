@@ -4,7 +4,7 @@ WITH time_region_genus_percent AS (
 			-- grab all live tree observations on non-timberland conditions
 			-- include information on their region and genus
 			-- calculate basal area
-			-- assign them tree observations to t1 or t2
+			-- assign the tree observations to t1 or t2
 			SELECT 
 				CASE WHEN eup.invyr > 1979 AND eup.invyr < 1999 THEN 1 ELSE 2 END AS time_period,
 				eur.statecd,
