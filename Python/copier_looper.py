@@ -13,7 +13,7 @@ import os
 load_dotenv()
 
 # This is the folder that contains all of your state TREE tables in CSV format
-folder = f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/eastern_us_data/SUBP_COND_BY_STATE'
+folder = f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/updated_east_us_data/east_us_plot'
 
 # get the paths to all your state TREE tables
 file_paths = glob.glob(os.path.join(folder, '*'))
@@ -24,7 +24,7 @@ for file_path in file_paths:
     table_name = os.path.splitext(os.path.basename(file_path))[0]
 
     # for each csv table, make a COPY FROM query and write them all to output_file
-    with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/queries_to_copy_cond_tables.txt', 'a') as output_file:
+    with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/queries_to_copy_new_plot.txt', 'a') as output_file:
         output_file.write(f"""COPY {table_name}
 FROM \'{file_path}\'
 CSV HEADER DELIMITER ',';\n\n""")
