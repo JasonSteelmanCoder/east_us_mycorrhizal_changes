@@ -28,7 +28,7 @@ for region in regions:
     pcts_adapted = []
     pcts_em = []
 
-    with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/adaptation_by_county.csv', 'r') as input_file:
+    with open(f'C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/adaptation_by_county_filtered.csv', 'r') as input_file:
         reader = csv.reader(input_file)
         i = 0
         for row in reader:
