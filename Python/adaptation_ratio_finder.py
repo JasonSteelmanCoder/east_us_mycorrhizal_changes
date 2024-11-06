@@ -72,12 +72,17 @@ for county_row in counties:
                     ON east_us_tree.spcd = fire_adaptation.spcd
                     JOIN ref_species
                     ON ref_species.spcd = east_us_tree.spcd
+                    JOIN east_us_cond euc
+					ON 
+						euc.plt_cn = east_us_tree.plt_cn
+						AND euc.condid = east_us_tree.condid
                     WHERE 
                         east_us_tree.statecd = {statecd} 
                         AND east_us_tree.unitcd = {unitcd}
                         AND east_us_tree.countycd = {countycd}
                         AND east_us_tree.invyr > 2014 AND east_us_tree.invyr < 2023				-- at T2
                         AND east_us_tree.dia IS NOT NULL											-- trees must have diameters
+                        AND euc.stdorgcd = 0                                                -- trees should be on natural conditions, not artificially regenerated ones
                 )
                 -- grab all observations of plots, summing AM and EM basal areas
                 SELECT 
@@ -310,7 +315,7 @@ for county_row in counties:
 # once all county rows have been added to output_contents, write contents to a csv file
 # note that this implementation gets part of the path from a .env file
 # replace the path with the location where you want your csv file stored on your computer
-with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/adaptation_by_county.csv", "w") as output_file:
+with open(f"C:/Users/{os.getenv("MS_USER_NAME")}/Desktop/adaptation_by_county_filtered.csv", "w") as output_file:
     output_file.write(output_contents)
 
 # clean up
