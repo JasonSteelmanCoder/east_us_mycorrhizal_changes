@@ -19,7 +19,6 @@ cursor = connection.cursor()
 cursor.execute(f"""
     SELECT statecd, unitcd, countycd 
     FROM east_us_plot 
-    WHERE plot_status_cd = 1            -- exclude non-forest plots
     GROUP BY statecd, unitcd, countycd
 """)
 
@@ -53,7 +52,7 @@ for county_row in counties:
             LEFT JOIN ref_species
             ON east_us_tree.spcd = ref_species.spcd
             LEFT JOIN east_us_cond
-            ON east_us_tree.statecd = east_us_cond.statecd AND east_us_tree.unitcd = east_us_cond.unitcd AND east_us_tree.countycd = east_us_cond.countycd AND CAST(east_us_tree.plot AS text) = east_us_cond.plot AND east_us_tree.invyr = east_us_cond.invyr AND east_us_tree.condid = east_us_cond.condid
+            ON east_us_tree.statecd = east_us_cond.statecd AND east_us_tree.unitcd = east_us_cond.unitcd AND east_us_tree.countycd = east_us_cond.countycd AND east_us_tree.plot = east_us_cond.plot AND east_us_tree.invyr = east_us_cond.invyr AND east_us_tree.condid = east_us_cond.condid
             WHERE 
   
             east_us_tree.invyr > 1979 AND east_us_tree.invyr < 1999 AND										-- at T1
@@ -62,7 +61,7 @@ for county_row in counties:
             east_us_tree.unitcd = {unitcd} AND
             east_us_tree.countycd = {countycd} AND 
   
-            (east_us_cond.industrialcd_fiadb IS NULL OR east_us_cond.industrialcd_fiadb = 0) AND	-- exclude timberland
+            east_us_cond.stdorgcd = 0 AND	-- exclude timberland
             east_us_tree.statuscd = 1			-- only count live trees
   
             ORDER BY statecd, unitcd, countycd, plot, subp, tree
@@ -108,7 +107,7 @@ for county_row in counties:
                 LEFT JOIN ref_species
                 ON east_us_tree.spcd = ref_species.spcd
                 LEFT JOIN east_us_cond
-                ON east_us_tree.statecd = east_us_cond.statecd AND east_us_tree.unitcd = east_us_cond.unitcd AND east_us_tree.countycd = east_us_cond.countycd AND CAST(east_us_tree.plot AS text) = east_us_cond.plot AND east_us_tree.invyr = east_us_cond.invyr AND east_us_tree.condid = east_us_cond.condid
+                ON east_us_tree.statecd = east_us_cond.statecd AND east_us_tree.unitcd = east_us_cond.unitcd AND east_us_tree.countycd = east_us_cond.countycd AND east_us_tree.plot = east_us_cond.plot AND east_us_tree.invyr = east_us_cond.invyr AND east_us_tree.condid = east_us_cond.condid
                 WHERE 
 
                 east_us_tree.invyr > 2014 AND east_us_tree.invyr < 2023 AND										-- at T2
@@ -117,7 +116,7 @@ for county_row in counties:
                 east_us_tree.unitcd = {unitcd} AND
                 east_us_tree.countycd = {countycd} AND 
 
-                (east_us_cond.industrialcd_fiadb IS NULL OR east_us_cond.industrialcd_fiadb = 0) AND	-- exclude timberland
+                east_us_cond.stdorgcd = 0 AND	-- exclude timberland
                 east_us_tree.statuscd = 1			-- only count live trees
 
                 ORDER BY statecd, unitcd, countycd, plot, subp, tree
