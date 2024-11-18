@@ -41,7 +41,7 @@ WITH delta_county_basal_areas AS (
 					(eup.invyr > 2014 AND eup.invyr < 2023)
 					AND eut.statuscd = 1													-- tree must be live
 					AND rs.genus != 'Tree'													-- tree must have an identified species
-					AND (euc.industrialcd_fiadb IS NULL OR euc.industrialcd_fiadb = 0)		-- condition must not be timberland
+					AND euc.stdorgcd = 0                                            		-- condition must not be timberland
 				ORDER BY 
 					time_period,
 					eur.statecd,
