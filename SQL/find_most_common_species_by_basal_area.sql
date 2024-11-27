@@ -24,7 +24,7 @@ JOIN ref_species
 ON spcd_by_basal.spcd = ref_species.spcd
 ORDER BY basal_area DESC
 LIMIT 75
-
+ 
 
 
 
